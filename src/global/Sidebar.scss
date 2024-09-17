@@ -1,0 +1,67 @@
+.main-menu {
+    height: 100%;
+    width: 100%;
+    display: flex;
+
+    .menu-icon-container {
+        background-color: lightgray;
+        padding: 10px;
+
+        .menu-icon-items .menu-link {
+            text-decoration: none;
+            padding: 10px 10px;
+            font-size: 16px;
+            color: #224958;
+            display: block;
+            cursor: pointer;
+            font-weight: 700;
+            height: 55px;
+
+            .icon {
+                width: 2rem;
+                height: 1.8rem;
+                font-size: 2rem;
+            }
+
+            &:hover {
+                border-radius: 10px;
+                background-color: rgb(236, 233, 233);
+            }
+        }
+    }
+
+    .menu-container {
+        box-sizing: border-box;
+        width: 100%;
+        box-shadow: 11px 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+        .MuiTypography-h5 {
+            font-weight: 900;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid rgb(227, 226, 226)
+        }
+
+        .menu {
+            margin-top: -15px;
+
+            .menu-items {
+                margin: 5px 0;
+                padding: 12px 16px;
+                width: 100%;
+                cursor: pointer;
+
+                .menu-link {
+                    text-decoration: none;
+                    color: black;
+                    font-size: 14px;
+                    display: block;
+                }
+
+                &:hover {
+                    background-color: rgb(215, 215, 215);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,171 @@
+// @import '~bootstrap/dist/css/bootstrap.min.css';
+// @import '~@fontawesome/fontawesome-free/css/all.css';
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
+
+:root {
+  --boston-blue: #224958;
+  --black: #000000;
+  --white: #ffffff;
+  --white-smoke: #f5f5f5;
+  --red: #c62828;
+  --orange: #ff8f00;
+  --yellow: #ffd740;
+  --green: #2e7d32;
+  --beige: #f5f5dc;
+  --disabled: #9c9fa1;
+  --blue: #0d99ff;
+}
+
+/* src/index.scss */
+*,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root,
+.app,
+.content {
+  height: 100%;
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  // font-family: "Source Sans Pro", sans-serif;
+}
+
+// html,
+// body {
+//   height: 100%;
+//   margin: 0;
+// }
+
+.app {
+  display: flex;
+  position: relative;
+}
+
+.contain {
+  margin: 20px;
+}
+
+// Styles for custom scrollbar
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  background-color: var(--white-smoke);
+}
+
+/* Tract */
+::-webkit-scrollbar-track {
+  background: var(--white-smoke);
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: #cacace;
+  border-radius: 10px;
+}
+
+// Snackbar styles
+.snackbar-container {
+  border-radius: 5px;
+  color: var(--beige);
+
+  &.error {
+    background-color: var(--red) !important;
+  }
+
+  &.success {
+    background-color: var(--green) !important;
+  }
+
+  &.warning {
+    background-color: var(--orange) !important;
+  }
+}
+
+// Responsive Design
+@media (max-width: 800px) {
+  .form-field {
+    width: 240px !important;
+  }
+}
+
+@media (min-width: 810px) {
+  .form-field {
+    width: 300px !important;
+  }
+}
+
+// Define breakpoints (Bootstrap's default breakpoints)
+$container-max-widths: (
+  xs: 540px,
+  sm: 720px,
+  md: 960px,
+  lg: 1140px,
+  xl: 1320px,
+  xxl: 1500px
+);
+
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+
+  // Responsive breakpoints
+  @each $breakpoint, $max-width in $container-max-widths {
+    @if $breakpoint !=xs {
+      @media (min-width: map-get($container-max-widths, $breakpoint)) {
+        &.container-#{$breakpoint} {
+          max-width: $max-width;
+        }
+      }
+    }
+
+    @else {
+      &.container-xs {
+        max-width: $max-width;
+      }
+    }
+  }
+}
+
+/* The root of the data grid*/
+.MuiDataGrid-root {
+  border-radius: 10px;
+
+  .MuiDataGrid-columnHeader {
+    background-color: var(--boston-blue);
+    color: white;
+  }
+
+  .MuiDataGrid-columnHeaderTitle {
+    font-weight: bold;
+  }
+
+  .MuiDataGrid-cell {
+    font-size: 12px;
+  }
+
+  /* Style sorting arrow */
+  .MuiDataGrid-sortIcon {
+    color: var(--white-smoke);
+  }
+
+  /* Style the menu button (hover state) */
+  .MuiDataGrid-menuIconButton {
+    color: var(--white-smoke);
+  }
+
+  .MuiDataGrid-row {
+    &:hover {
+      background-color: #e1e3e6;
+      border: 1px double #d0d2d6;
+      color: var(--boston-blue);
+    }
+  }
+}
