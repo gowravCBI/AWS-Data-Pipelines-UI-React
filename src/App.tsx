@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./global/Layout";
 import PipelineList from "./pages/pipeline-list/PipelineList";
-import PipelineDetails from "./pages/pipeline-deatils/PipelineDeatils";
+import PipelineDetails from "./pages/pipeline-details/PipelineDetails";
 
 const App = () => {
   return (

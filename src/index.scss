@@ -30,8 +30,9 @@ body,
 .content {
   height: 100%;
   width: 100%;
-  font-family: "Roboto", sans-serif;
+  // font-family: "Roboto", sans-serif;
   // font-family: "Source Sans Pro", sans-serif;
+
 }
 
 // html,
@@ -43,10 +44,6 @@ body,
 .app {
   display: flex;
   position: relative;
-}
-
-.contain {
-  margin: 20px;
 }
 
 // Styles for custom scrollbar

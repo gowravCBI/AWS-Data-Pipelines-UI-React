@@ -2,14 +2,27 @@ import { Box, IconButton, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import Header from "../../components/Header";
 import "./PipelineList.scss";
-import BasicDetailPanels from "../../components/BasicDetailPanels";
-// import PipelineDescriptionList from "../../components/PipelineDescriptionList";
+import BasicDetailPanels from "./BasicDetailPanels";
 
 const PipelineList = () => {
   return (
     <Box className="container container-xxl" mt="20px">
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Pipeline List" subtitle="Welcome to your dashboard" />
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ marginBottom: "20px" }}
+        className="header"
+      >
+        <Header title="Pipeline List" />
+      </Box>
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="flex-start"
+        sx={{ marginBottom: "20px" }}
+        className="container"
+      >
         <Box className="search-container">
           <IconButton className="icon">
             <SearchIcon />
@@ -33,10 +46,9 @@ const PipelineList = () => {
         </Box>
       </Box>
 
-      <Box className="container">
-        <Box className="table-container container">
+      <Box className="container ">
+        <Box className="container ">
           <BasicDetailPanels />
-          {/* <PipelineDescriptionList/> */}
         </Box>
       </Box>
     </Box>

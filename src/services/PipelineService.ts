@@ -1,23 +1,26 @@
 import axios from 'axios';
-import { PipelineDescription, PipelineRunDetails, PipelineActualDefinition, PipelineId } from './types';
+import { PipelineDescription, PipelineActualDefinition } from './types';
 
-// const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/aws-datapipeline';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+// const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/aws-datapipeline';
 
 export class PipelineService {
     private serviceUrl: string = `${API_URL}`;
 
     async getPipelineDescriptionList(): Promise<PipelineDescription[]> {
-        // const url = `${this.serviceUrl}/pipelineDescriptionList`;
-        const url = `${this.serviceUrl}/descriptions`;
+        const url = `${this.serviceUrl}/pipelineDescriptionList`;
+        // const url = `${this.serviceUrl}/descriptions`;
         try {
-            // const response = await axios.get<PipelineDescription[]>(url);
-            const response = await axios.get<{ pipelineDescriptionList: PipelineDescription[] }>(url);
+            const response = await axios.get<PipelineDescription[]>(url);
             console.log("raw PipelineDescription ==> ", response);
-            // const modifiedData = this.removeAtFromKeys(response.data);
-            const modifiedData = this.removeAtFromKeys(response.data.pipelineDescriptionList);
-            // return response.data;
+            const modifiedData = this.removeAtFromKeys(response.data);
             return modifiedData;
+
+
+            // const response = await axios.get<{ pipelineDescriptionList: PipelineDescription[] }>(url);
+            // console.log("raw PipelineDescription ==> ", response);
+            // const modifiedData = this.removeAtFromKeys(response.data.pipelineDescriptionList);
+            // return modifiedData;
         } catch (error) {
             console.error('Error fetching pipeline description list:', error);
             throw error;
@@ -34,10 +37,10 @@ export class PipelineService {
         }));
     }
 
-    async getPipelineRunDetails(pipelineId: PipelineId): Promise<PipelineRunDetails> {
+    async getPipelineRunDetails(pipelineId: string): Promise<PipelineDescription[]> {
         const url = `${this.serviceUrl}/pipelineRunDetails/${pipelineId}`;
         try {
-            const response = await axios.get<PipelineRunDetails>(url);
+            const response = await axios.get<PipelineDescription[]>(url);
             return response.data;
         } catch (error) {
             console.error(`Error fetching pipeline run details for ${pipelineId}:`, error);
@@ -45,7 +48,7 @@ export class PipelineService {
         }
     }
 
-    async getPipelineActualDefinition(pipelineId: PipelineId): Promise<PipelineActualDefinition> {
+    async getPipelineActualDefinition(pipelineId: string): Promise<PipelineActualDefinition> {
         const url = `${this.serviceUrl}/pipelineActualDefinition/${pipelineId}`;
         try {
             const response = await axios.get<PipelineActualDefinition>(url);

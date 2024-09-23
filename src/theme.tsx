@@ -68,20 +68,20 @@ const theme = createTheme({
     //     },
     //   },
     // },
-    MuiTable: {
-      styleOverrides: {
-        root: {
-          // Add table-specific styles here
-        },
-      },
-    },
-    MuiSnackbar: {
-      styleOverrides: {
-        root: {
-          borderRadius: "5px",
-        },
-      },
-    },
+    // MuiTable: {
+    //   styleOverrides: {
+    //     root: {
+    //       // Add table-specific styles here
+    //     },
+    //   },
+    // },
+    // MuiSnackbar: {
+    //   styleOverrides: {
+    //     root: {
+    //       borderRadius: "5px",
+    //     },
+    //   },
+    // },
     // Add other component overrides as needed
   },
 });

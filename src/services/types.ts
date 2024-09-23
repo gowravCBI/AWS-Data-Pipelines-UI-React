@@ -14,8 +14,8 @@ export interface PipelineDescription {
     name: string;
     fields: PipelineField[];
     description?: string | null;
-    runDetails?: unknown;  // You can specify a more detailed type if you have more information
-    tags: PipelineTag[];  // Updated to reflect the actual structure
+    runDetails?: RunDetails[];
+    tags?: PipelineTag[] | null;
 }
 
 // Transformed PipelineDescription with fields as an object
@@ -29,10 +29,26 @@ export interface TransformedPipelineDescription {
 }
 
 
-export interface PipelineRunDetails {
-    id: number;
-    status: string;
-    // Add other relevant fields
+export interface RunDetails {
+    id: string,
+    name: string,
+    parent: string,
+    triesLeft: string,
+    resourceRegion: string,
+    headAttempt: string,
+    resource: string,
+    sphere: string,
+    attemptCount: string,
+    type: string,
+    status: string,
+    actualEndTime: string,
+    scheduledStartTime: string,
+    scheduledEndTime: string,
+    input: string,
+    version: string,
+    actualStartTime: string,
+    componentParent: string,
+    resourceId: string,
 }
 
 export interface PipelineActualDefinition {
@@ -40,6 +56,3 @@ export interface PipelineActualDefinition {
     definition: string;
     // Add other relevant fields
 }
-
-// Update pipelineId type if needed
-export type PipelineId = number | string;

@@ -1,0 +1,40 @@
+/* Table container styles */
+.MuiTable-root {
+
+    /* TableHead styles */
+    .MuiTableHead-root {
+
+        /* TableRow styles */
+        .MuiTableRow-root {
+
+            /* TableCell styles */
+            .MuiTableCell-root {
+                text-decoration: underline;
+                font-weight: bold;
+                text-align: center;
+                padding: 2px 5px;
+                // font-size: 12px;
+            }
+        }
+    }
+
+    /* TableBody styles */
+    .MuiTableBody-root {
+
+        /* TableRow styles */
+        .MuiTableRow-root {
+            border-style: hidden;
+
+            /* TableCell styles */
+            .MuiTableCell-root {
+                padding: 2px 5px;
+                // font-size: 12px;
+
+                /* Target the first TableCell of each TableRow */
+                &:first-of-type {
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+}
