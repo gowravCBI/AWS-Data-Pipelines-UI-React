@@ -12,7 +12,7 @@ export class PipelineService {
         // const url = `${this.serviceUrl}/descriptions`;
         try {
             const response = await axios.get<PipelineDescription[]>(url);
-            console.log("raw PipelineDescription ==> ", response);
+            // console.log("raw PipelineDescription ==> ", response);
             const modifiedData = this.removeAtFromKeys(response.data);
             return modifiedData;
 

@@ -52,7 +52,6 @@ export interface RunDetails {
 }
 
 export interface PipelineActualDefinition {
-    id: number;
-    definition: string;
+    id: string;
     // Add other relevant fields
 }

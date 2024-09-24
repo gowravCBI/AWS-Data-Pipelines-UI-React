@@ -5,27 +5,29 @@ import { CircularProgress, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
-import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
+import AccountTreeRounded from "@mui/icons-material/AccountTreeRounded";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { PipelineDescription } from "../../services/types";
+import { PipelineActualDefinition } from "../pipeline-actual-definition/PipelineActualDefinition";
 
 // Main component
 export default function BasicDetailPanels() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [currentPipelineId, setCurrentPipelineId] = useState<string | null>(
+  const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null
   );
   const [pipelines, setPipelines] = useState<PipelineDescription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDialog, setShowDialog] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchPipelines = async () => {
       try {
         const data = await pipelineService.getPipelineDescriptionList();
-        console.log(data);
+        // console.log(data);
         setPipelines(data);
         setLoading(false);
       } catch (err) {
@@ -69,13 +71,25 @@ export default function BasicDetailPanels() {
     pipelineId: string
   ) => {
     setAnchorEl(event.currentTarget);
-    setCurrentPipelineId(pipelineId);
+    setSelectedPipelineId(pipelineId);
   };
 
   // Handle closing the menu
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setCurrentPipelineId(null);
+    setSelectedPipelineId(null);
+  };
+  // Handle opening the dialog
+  const handleDialogOpen = (pipelineId: string) => {
+    handleMenuClose(); // Close the menu before opening the dialog
+    setSelectedPipelineId(pipelineId); // Set the pipelineId to pass to the dialog
+    setShowDialog(true);
+  };
+
+  // Handle closing the dialog
+  const handleDialogClose = () => {
+    setShowDialog(false);
+    setSelectedPipelineId(null);
   };
 
   // Transform data for DataGrid
@@ -172,7 +186,7 @@ export default function BasicDetailPanels() {
       renderCell: (params) => (
         <>
           <IconButton
-            onClick={(event) => handleMenuClick(event, params.row.pipelineId)}
+            onClick={(event) => handleMenuClick(event, params.row.id)}
             aria-controls="actions-menu"
             aria-haspopup="true"
           >
@@ -183,9 +197,7 @@ export default function BasicDetailPanels() {
           <Menu
             id="actions-menu"
             anchorEl={anchorEl}
-            open={
-              Boolean(anchorEl) && currentPipelineId === params.row.pipelineId
-            }
+            open={Boolean(anchorEl) && selectedPipelineId === params.row.id}
             onClose={handleMenuClose}
             sx={{
               "& .MuiPaper-root": {
@@ -194,32 +206,24 @@ export default function BasicDetailPanels() {
             }}
           >
             <MenuItem
-              onClick={() =>
-                console.log(`Run pipeline ${params.row.pipelineId}`)
-              }
-              sx={{ color: "#224958" }}
+              onClick={() => console.log(`Run pipeline ${params.row.id}`)}
+              sx={{ color: "var(--boston-blue)" }}
             >
               <PlayArrowRoundedIcon sx={{ fontSize: 30, marginRight: "8px" }} />
               Run
             </MenuItem>
             <MenuItem
-              onClick={() =>
-                console.log(`Stop pipeline ${params.row.pipelineId}`)
-              }
-              sx={{ color: "#224958" }}
+              onClick={() => console.log(`Stop pipeline ${params.row.id}`)}
+              sx={{ color: "var(--boston-blue)" }}
             >
               <StopRoundedIcon sx={{ fontSize: 30, marginRight: "8px" }} />
               Stop
             </MenuItem>
             <MenuItem
-              onClick={() =>
-                console.log(
-                  `Download definition for pipeline ${params.row.pipelineId}`
-                )
-              }
+              onClick={() => handleDialogOpen(params.row.id)} // Open dialog here
               sx={{ color: "#224958" }}
             >
-              <DownloadRoundedIcon sx={{ fontSize: 30, marginRight: "8px" }} />
+              <AccountTreeRounded sx={{ fontSize: 30, marginRight: "8px" }} />
               Actual Definition
             </MenuItem>
           </Menu>
@@ -242,6 +246,13 @@ export default function BasicDetailPanels() {
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[10, 15, 20]}
       />
+      {/* Conditionally render the PipelineActualDefinitionComponent dialog */}
+      {showDialog && selectedPipelineId && (
+        <PipelineActualDefinition
+          pipelineId={selectedPipelineId}
+          onClose={handleDialogClose}
+        />
+      )}
     </Box>
   );
 }
