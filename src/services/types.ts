@@ -1,31 +1,39 @@
 // Define the types according to your API response structure
 export interface PipelineField {
-    key: string;
-    stringValue: string;
+    lastActivationTime: string,
+    nextRunTime: string,
+    creationTime: string,
+    sphere: string,
+    healthStatusUpdatedTime: string,
+    scheduledStartTime: string,
+    scheduledEndTime: string,
+    healthStatus: string,
+    latestRunTime: string,
+    pipelineCreator: string,
+    version: number,
+    name: string,
+    id: string,
+    pipelineState: string,
+    accountId: number,
+    uniqueId: string,
+    userId: number,
+    scheduledPeriod: string,
+    firstActivationTime: string
 }
 
+
 export interface PipelineTag {
-    key: string;
-    value: string;
+    Environment?: string,
+    Name?: string,
+    Owner?: string
 }
 
 export interface PipelineDescription {
-    pipelineId: string;
-    name: string;
-    fields: PipelineField[];
-    description?: string | null;
-    runDetails?: RunDetails[];
-    tags?: PipelineTag[] | null;
-}
-
-// Transformed PipelineDescription with fields as an object
-export interface TransformedPipelineDescription {
-    pipelineId: string;
-    name: string;
-    fields: Record<string, string>;  // Transformed from array to object
-    description?: string | null;
-    runDetails?: unknown;
-    tags: PipelineTag[];
+    pipelineId: string,
+    name: string,
+    fields: PipelineField,
+    description?: string,
+    tags?: PipelineTag,
 }
 
 
@@ -34,24 +42,24 @@ export interface RunDetails {
     name: string,
     parent: string,
     triesLeft: string,
-    resourceRegion: string,
     headAttempt: string,
     resource: string,
+    resourceId: string,
+    resourceRegion: string,
     sphere: string,
     attemptCount: string,
     type: string,
     status: string,
+    actualStartTime: string,
     actualEndTime: string,
     scheduledStartTime: string,
     scheduledEndTime: string,
     input: string,
     version: string,
-    actualStartTime: string,
     componentParent: string,
-    resourceId: string,
 }
 
 export interface PipelineActualDefinition {
-    id: string;
+    id: string,
     // Add other relevant fields
 }

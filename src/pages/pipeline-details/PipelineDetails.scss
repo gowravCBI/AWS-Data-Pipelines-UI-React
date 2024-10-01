@@ -27,14 +27,22 @@
 
             /* TableCell styles */
             .MuiTableCell-root {
+                min-width: 50px;
                 padding: 2px 5px;
-                // font-size: 12px;
+                font-size: 12px;
 
                 /* Target the first TableCell of each TableRow */
                 &:first-of-type {
                     font-weight: bold;
                 }
+
             }
         }
     }
+}
+
+/* Target the second TableCell in each TableRow of the tags-table */
+.tags-table .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:nth-child(2),
+.schedule-info-table .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root:nth-child(2) {
+    min-width: 150px;
 }

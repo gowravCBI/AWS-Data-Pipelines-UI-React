@@ -11,23 +11,47 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import Header from "../../components/Header";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { RunDetails, PipelineTag } from "../../services/types";
-import { CircularProgress } from "@mui/material";
 import "./PipelineDetails.scss";
 
 const PipelineDetails = () => {
   const { pipelineId } = useParams<{ pipelineId: string }>();
-  const [pipelineName, setPipelineName] = useState<string>("");
+  const location = useLocation(); // Access the location
+  const {
+    pipelineName,
+    pipelineTags,
+    scheduledPeriod,
+    scheduledStartTime,
+    scheduledEndTime,
+  } =
+    (location.state as {
+      // Destructure the passed state
+      pipelineName?: string;
+      pipelineTags?: PipelineTag; // Specify that pipelineTag is of type PipelineTag[]
+      scheduledPeriod?: string;
+      scheduledStartTime?: Date; // Change to Date
+      scheduledEndTime?: Date; // Change to Date
+    }) || {};
+
+  // Ensure date objects are parsed correctly
+  const formattedScheduledStartTime = scheduledStartTime
+    ? new Date(scheduledStartTime).toLocaleString() // Format date as needed
+    : "-";
+
+  const formattedScheduledEndTime = scheduledEndTime
+    ? new Date(scheduledEndTime).toLocaleString() // Format date as needed
+    : "-";
+
   const [pipelineRunDetails, setPipelineRunDetails] = useState<RunDetails[]>(
     []
   );
-  const [pipelineTags, setPipelineTags] = useState<PipelineTag[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
 
   useEffect(() => {
     const fetchPipelinesRunDetails = async () => {
@@ -36,15 +60,11 @@ const PipelineDetails = () => {
         const data = await pipelineService.getPipelineRunDetails(
           pipelineId || ""
         );
-        if (data && data.length > 0) {
-          setPipelineName(data[0].name);
-          setPipelineRunDetails(data[0].runDetails || []);
-          setPipelineTags(data[0].tags || []);
-          // console.log(pipelineTags);
-
-          setLoading(false);
-        }
+        // console.log("--------", data);
+        setPipelineRunDetails(data);
+        setLoading(false);
       } catch (err) {
+        console.log(error);
         setError("Failed to fetch pipeline pipelines");
         console.error(err);
         setLoading(false);
@@ -56,28 +76,36 @@ const PipelineDetails = () => {
     fetchPipelinesRunDetails();
   }, [pipelineId]);
 
-  if (loading)
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height={500}
-      >
-        <CircularProgress />
-      </Box>
-    ); // Show loading indicator while data is being fetched
-  if (error)
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height={300}
-      >
-        {error}
-      </Box>
-    ); // Show error message if there was an error fetching data
+  // Transform data for DataGrid
+  const rows = pipelineRunDetails.map((pipeline) => ({
+    id: pipeline.id,
+    name: pipeline.name,
+    parent: pipeline.parent,
+    triesLeft: pipeline.triesLeft,
+    headAttempt: pipeline.headAttempt,
+    attemptCount: pipeline.attemptCount,
+    resource: pipeline.resource,
+    resourceId: pipeline.resourceId,
+    resourceRegion: pipeline.resourceRegion,
+    sphere: pipeline.sphere,
+    type: pipeline.type,
+    status: pipeline.status,
+    actualStartTime: pipeline.actualStartTime,
+    actualEndTime: pipeline.actualEndTime,
+    scheduledStartTime: pipeline.scheduledStartTime,
+    scheduledEndTime: pipeline.scheduledEndTime,
+    input: pipeline.input,
+    version: pipeline.version,
+    componentParent: pipeline.componentParent,
+  }));
+
+  // Filter rows based on search query
+  const filteredRows = rows.filter(
+    (row) =>
+      row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row.id.toLowerCase().includes(searchQuery.toLowerCase())
+    // row.type.toString
+  );
 
   const columns: GridColDef[] = [
     {
@@ -86,6 +114,8 @@ const PipelineDetails = () => {
       width: 310,
       align: "center",
       headerAlign: "center",
+      type: "string",
+      hideable: false,
     },
     {
       field: "name",
@@ -93,6 +123,8 @@ const PipelineDetails = () => {
       width: 310,
       align: "center",
       headerAlign: "center",
+      type: "string",
+      hideable: false,
     },
     {
       field: "type",
@@ -100,10 +132,12 @@ const PipelineDetails = () => {
       width: 160,
       align: "center",
       headerAlign: "center",
+      type: "string",
     },
     {
       field: "scheduledStartTime",
       headerName: "Scheduled Start Time",
+      type: "dateTime",
       width: 160,
       align: "center",
       headerAlign: "center",
@@ -114,6 +148,7 @@ const PipelineDetails = () => {
       width: 140,
       align: "center",
       headerAlign: "center",
+      type: "string",
     },
     {
       field: "actualStartTime",
@@ -121,6 +156,7 @@ const PipelineDetails = () => {
       width: 160,
       align: "center",
       headerAlign: "center",
+      type: "dateTime",
     },
     {
       field: "actualEndTime",
@@ -128,6 +164,7 @@ const PipelineDetails = () => {
       width: 160,
       align: "center",
       headerAlign: "center",
+      type: "dateTime",
     },
   ];
 
@@ -176,6 +213,8 @@ const PipelineDetails = () => {
             variant="outlined"
             size="small"
             placeholder="Search"
+            value={searchQuery} // Bind the value to state
+            onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
             sx={{
               backgroundColor: "whitesmoke",
               border: "none",
@@ -212,34 +251,18 @@ const PipelineDetails = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {pipelineRunDetails.length > 0 ? (
-                    <>
-                      <TableRow>
-                        <TableCell>Start</TableCell>
-                        <TableCell>
-                          {pipelineRunDetails[0].scheduledStartTime}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>End</TableCell>
-                        <TableCell>
-                          {pipelineRunDetails[0].scheduledEndTime}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Period</TableCell>
-                        <TableCell>
-                          {pipelineRunDetails[0].scheduledEndTime}
-                        </TableCell>
-                      </TableRow>
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={2} align="center">
-                        No schedule information available.
-                      </TableCell>
-                    </TableRow>
-                  )}
+                  <TableRow>
+                    <TableCell>Start</TableCell>
+                    <TableCell>{formattedScheduledStartTime}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>End</TableCell>
+                    <TableCell>{formattedScheduledEndTime}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Period</TableCell>
+                    <TableCell>{scheduledPeriod || "-"}</TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
@@ -253,37 +276,18 @@ const PipelineDetails = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {pipelineTags.length > 0 ? (
-                    <>
-                      <TableRow>
-                        <TableCell>Environment</TableCell>
-                        <TableCell>
-                          {pipelineTags.find((tag) => tag.key === "Environment")
-                            ?.value || ""}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>
-                          {pipelineTags.find((tag) => tag.key === "Name")
-                            ?.value || ""}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Owner</TableCell>
-                        <TableCell>
-                          {pipelineTags.find((tag) => tag.key === "Owner")
-                            ?.value || ""}
-                        </TableCell>
-                      </TableRow>
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={2} align="center">
-                        No schedule information available.
-                      </TableCell>
-                    </TableRow>
-                  )}
+                  <TableRow>
+                    <TableCell>Environment</TableCell>
+                    <TableCell>{pipelineTags?.Environment || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>{pipelineTags?.Name || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Owner</TableCell>
+                    <TableCell>{pipelineTags?.Owner || "-"}</TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
@@ -293,8 +297,9 @@ const PipelineDetails = () => {
 
       <Box className="container">
         <DataGrid
-          sx={{ boxShadow: "4", height: 300 }}
-          rows={pipelineRunDetails}
+          sx={{ boxShadow: "4", height: 350 }}
+          loading={loading}
+          rows={filteredRows}
           columns={columns}
           rowHeight={40}
           columnHeaderHeight={45}
@@ -302,6 +307,13 @@ const PipelineDetails = () => {
           pagination
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10, 15]}
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            loadingOverlay: {
+              variant: "skeleton",
+              noRowsVariant: "skeleton",
+            },
+          }}
         />
       </Box>
     </Box>

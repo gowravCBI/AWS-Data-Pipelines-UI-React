@@ -21,3 +21,18 @@
         border: none;
     }
 }
+
+.pipeline-list-container {
+
+    .pipeline-id-link {
+        color: var(--blue);
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+}
+
+.MuiDataGrid-toolbarContainer {
+    flex-direction: row-reverse; // Example for styling buttons inside the toolbar
+}
