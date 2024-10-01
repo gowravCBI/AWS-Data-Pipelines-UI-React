@@ -1,7 +1,6 @@
 import Header from "../../components/Header";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
-import "./BasicDetailPanels.scss";
 import "./PipelineList.scss";
 import { IconButton, Menu, MenuItem, TextField } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
