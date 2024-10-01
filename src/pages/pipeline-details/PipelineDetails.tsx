@@ -1,6 +1,8 @@
 import {
   Box,
+  Breadcrumbs,
   IconButton,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -8,7 +10,9 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Typography,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import Header from "../../components/Header";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
@@ -167,17 +171,43 @@ const PipelineDetails = () => {
       type: "dateTime",
     },
   ];
-
+  function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    console.info("You clicked a breadcrumb.");
+  }
   const paginationModel = { page: 0, pageSize: 5 };
   return (
     <Box className="container container-xxl" mt="20px">
       <Box
         display="flex"
-        justifyContent="space-between"
-        alignItems="center"
+        flexDirection="column"
         sx={{ marginBottom: "20px" }}
         className="header"
       >
+        <Box role="presentation" onClick={handleClick}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              underline="hover"
+              color="var(--boston-blue)"
+              to="/"
+              component={RouterLink}
+            >
+              Home
+            </Link>
+            <Link
+              underline="hover"
+              color="var(--boston-blue)"
+              to="/pipeline/list"
+              aria-current="page"
+              component={RouterLink}
+            >
+              PipelineList
+            </Link>
+            <Typography sx={{ color: "var(--boston-blue)", fontWeight: "600" }}>
+              PipelineRunDetails
+            </Typography>
+          </Breadcrumbs>
+        </Box>
         <Header title={`Pipeline Instance Details of ${pipelineName}`} />
       </Box>
       <Box

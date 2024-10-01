@@ -2,14 +2,22 @@ import Header from "../../components/Header";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import "./PipelineList.scss";
-import { IconButton, Menu, MenuItem, TextField } from "@mui/material";
+import {
+  Breadcrumbs,
+  IconButton,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
+import Link from "@mui/material/Link";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import AccountTreeRounded from "@mui/icons-material/AccountTreeRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { PipelineDescription } from "../../services/types";
 import { PipelineActualDefinition } from "../pipeline-actual-definition/PipelineActualDefinition";
@@ -114,7 +122,7 @@ const PipelineList = () => {
       headerAlign: "center",
       hideable: false,
       renderCell: (params) => (
-        <Link
+        <RouterLink
           to={`/pipeline/details/${params.value}`}
           className="pipeline-id-link"
           state={{
@@ -127,7 +135,7 @@ const PipelineList = () => {
           }}
         >
           {params.value}
-        </Link>
+        </RouterLink>
       ),
     },
     {
@@ -234,16 +242,34 @@ const PipelineList = () => {
       ),
     },
   ];
+  function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    console.info("You clicked a breadcrumb.");
+  }
   const paginationModel = { page: 0, pageSize: 10 };
   return (
     <Box className="container container-xxl" mt="20px">
       <Box
         display="flex"
-        justifyContent="space-between"
-        alignItems="center"
+        flexDirection="column"
         sx={{ marginBottom: "20px" }}
         className="header"
       >
+        <Box role="presentation" onClick={handleClick}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              underline="hover"
+              color="var(--boston-blue)"
+              to="/"
+              component={RouterLink}
+            >
+              Home
+            </Link>
+            <Typography sx={{ color: "var(--boston-blue)", fontWeight: "600" }}>
+              PipelineList
+            </Typography>
+          </Breadcrumbs>
+        </Box>
         <Header title="Pipeline List" />
       </Box>
 
