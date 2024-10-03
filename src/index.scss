@@ -135,27 +135,45 @@ $container-max-widths: (
 .MuiDataGrid-root {
   border-radius: 10px;
 
-  .MuiDataGrid-columnHeader {
-    background-color: var(--boston-blue);
-    color: white;
-  }
+  .MuiDataGrid-columnHeaders {
 
-  .MuiDataGrid-columnHeaderTitle {
-    font-weight: bold;
+    .MuiDataGrid-filler,
+    .MuiDataGrid-scrollbarFiller {
+      background-color: var(--boston-blue);
+    }
+
+    .MuiDataGrid-columnHeader {
+      background-color: var(--boston-blue);
+      color: var(--white);
+
+      .MuiDataGrid-columnHeaderTitle {
+        font-weight: bold;
+      }
+
+      /* Style sorting arrow */
+      .MuiDataGrid-sortIcon {
+        color: var(--white-smoke);
+        /* Always visible */
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+
+      /* Style the menu button (hover state) */
+      .MuiDataGrid-menuIconButton {
+        color: var(--white-smoke);
+      }
+
+      .MuiDataGrid-columnSeparator {
+        /* Always visible */
+        opacity: 1 !important;
+        visibility: visible !important;
+        color: var(--white-smoke);
+      }
+    }
   }
 
   .MuiDataGrid-cell {
     font-size: 12px;
-  }
-
-  /* Style sorting arrow */
-  .MuiDataGrid-sortIcon {
-    color: var(--white-smoke);
-  }
-
-  /* Style the menu button (hover state) */
-  .MuiDataGrid-menuIconButton {
-    color: var(--white-smoke);
   }
 
   .MuiDataGrid-row {
@@ -163,6 +181,7 @@ $container-max-widths: (
       background-color: #e1e3e6;
       border: 1px double #d0d2d6;
       color: var(--boston-blue);
+      font-weight: 650;
     }
   }
 }

@@ -1,6 +1,11 @@
 import Header from "../../components/Header";
 import Box from "@mui/material/Box";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridColumnVisibilityModel,
+  GridToolbar,
+} from "@mui/x-data-grid";
 import "./PipelineList.scss";
 import {
   Breadcrumbs,
@@ -37,7 +42,7 @@ const PipelineList = () => {
     const fetchPipelines = async () => {
       try {
         const data = await pipelineService.getPipelineDescriptionList();
-        // console.log("============", data);
+        console.log("============", data);
         setPipelines(data);
         setLoading(false);
       } catch (err) {
@@ -84,15 +89,16 @@ const PipelineList = () => {
   const rows = pipelines.map((pipeline) => ({
     id: pipeline.pipelineId,
     name: pipeline.name,
+    firstActivationTime: pipeline.fields.firstActivationTime,
     lastActivationTime: pipeline.fields.lastActivationTime,
     nextRunTime: pipeline.fields.nextRunTime,
+    latestRunTime: pipeline.fields.latestRunTime,
     creationTime: pipeline.fields.creationTime,
     sphere: pipeline.fields.sphere,
     healthStatusUpdatedTime: pipeline.fields.healthStatusUpdatedTime,
     scheduledStartTime: pipeline.fields.scheduledStartTime,
     scheduledEndTime: pipeline.fields.scheduledEndTime,
     healthStatus: pipeline.fields.healthStatus,
-    latestRunTime: pipeline.fields.latestRunTime,
     pipelineCreator: pipeline.fields.pipelineCreator,
     version: pipeline.fields.version,
     pipelineState: pipeline.fields.pipelineState,
@@ -100,7 +106,6 @@ const PipelineList = () => {
     uniqueId: pipeline.fields.uniqueId,
     userId: pipeline.fields.userId,
     scheduledPeriod: pipeline.fields.scheduledPeriod,
-    firstActivationTime: pipeline.fields.firstActivationTime,
     tags: pipeline.tags,
   }));
 
@@ -110,6 +115,32 @@ const PipelineList = () => {
       row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       row.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Add state for column visibility
+  const [columnVisibilityModel, setColumnVisibilityModel] =
+    useState<GridColumnVisibilityModel>({
+      id: true,
+      name: true,
+      lastActivationTime: true,
+      nextRunTime: true,
+      healthStatus: true,
+      pipelineState: true,
+      scheduledPeriod: true,
+      actions: true,
+      // Set the rest of the columns to false (hidden)
+      creationTime: false,
+      sphere: false,
+      healthStatusUpdatedTime: false,
+      scheduledStartTime: false,
+      scheduledEndTime: false,
+      latestRunTime: false,
+      pipelineCreator: false,
+      version: false,
+      accountId: false,
+      uniqueId: false,
+      userId: false,
+      firstActivationTime: false,
+    });
 
   // Define columns based on pipeline data
   const columns: GridColDef[] = [
@@ -142,10 +173,19 @@ const PipelineList = () => {
       field: "name",
       headerName: "Pipeline Name",
       type: "string",
-      width: 250,
+      width: 240,
       align: "center",
       headerAlign: "center",
-      hideable: false,
+      hideable: true,
+    },
+    {
+      field: "firstActivationTime",
+      headerName: "First Activation Time",
+      type: "dateTime",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
     },
     {
       field: "lastActivationTime",
@@ -154,22 +194,97 @@ const PipelineList = () => {
       width: 190,
       align: "center",
       headerAlign: "center",
+      hideable: true,
     },
     {
       field: "nextRunTime",
       headerName: "Next Run Time",
       type: "dateTime",
-      width: 190,
+      width: 170,
       align: "center",
       headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "latestRunTime",
+      headerName: "Latest Run Time",
+      type: "dateTime",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "creationTime",
+      headerName: "Creation Time",
+      type: "dateTime",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "sphere",
+      headerName: "Sphere",
+      type: "string",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "healthStatusUpdatedTime",
+      headerName: "Health Status Updated Time",
+      type: "dateTime",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "scheduledStartTime",
+      headerName: "Scheduled Start Time",
+      type: "dateTime",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "scheduledEndTime",
+      headerName: "Scheduled End Time",
+      type: "dateTime",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
     },
     {
       field: "healthStatus",
       headerName: "Health Status",
       type: "string",
-      width: 150,
+      width: 140,
       align: "center",
       headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "pipelineCreator",
+      headerName: "Pipeline Creator",
+      type: "string",
+      width: 350,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "version",
+      headerName: "Version",
+      type: "number",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
     },
     {
       field: "pipelineState",
@@ -178,19 +293,48 @@ const PipelineList = () => {
       width: 150,
       align: "center",
       headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "accountId",
+      headerName: "Account Id",
+      type: "number",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "uniqueId",
+      headerName: "Unique Id",
+      type: "string",
+      width: 300,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "userId",
+      headerName: "User Id",
+      type: "number",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
     },
     {
       field: "scheduledPeriod",
       headerName: "Scheduled Period",
       type: "string",
-      width: 140,
+      width: 170,
       align: "center",
       headerAlign: "center",
+      hideable: true,
     },
     {
       field: "actions",
       headerName: "Actions",
-      width: 90,
+      width: 100,
       align: "center",
       headerAlign: "center",
       hideable: false,
@@ -251,93 +395,93 @@ const PipelineList = () => {
     <Box className="container container-xxl" mt="20px">
       <Box
         display="flex"
-        flexDirection="column"
+        justifyContent="space-between"
+        alignItems="flex-end"
         sx={{ marginBottom: "20px" }}
-        className="header"
+        className="container header-search-container"
       >
-        <Box role="presentation" onClick={handleClick}>
-          <Breadcrumbs aria-label="breadcrumb">
-            <Link
-              underline="hover"
-              color="var(--boston-blue)"
-              to="/"
-              component={RouterLink}
-            >
-              Home
-            </Link>
-            <Typography sx={{ color: "var(--boston-blue)", fontWeight: "600" }}>
-              PipelineList
-            </Typography>
-          </Breadcrumbs>
-        </Box>
-        <Header title="Pipeline List" />
-      </Box>
-
-      <Box className="container ">
-        <Box className="container ">
-          <Box className="pipeline-list-container">
-            <Box
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="flex-start"
-              sx={{ marginBottom: "20px" }}
-              className="container"
-            >
-              <Box className="search-container">
-                <IconButton className="icon">
-                  <SearchIcon />
-                </IconButton>
-                <TextField
-                  className="search-box"
-                  variant="outlined"
-                  size="small"
-                  placeholder="Search"
-                  value={searchQuery} // Bind the value to state
-                  onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
-                  sx={{
-                    backgroundColor: "whitesmoke",
-                    border: "none",
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        border: "none",
-                      },
-                    },
-                  }}
-                  fullWidth
-                />
-              </Box>
-            </Box>
-            <DataGrid
-              sx={{ boxShadow: "4", height: 500 }}
-              loading={loading}
-              columns={columns}
-              rows={filteredRows}
-              rowHeight={40}
-              columnHeaderHeight={45}
-              disableRowSelectionOnClick
-              pagination
-              initialState={{ pagination: { paginationModel } }}
-              pageSizeOptions={[10, 15, 20]}
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                loadingOverlay: {
-                  variant: "skeleton",
-                  noRowsVariant: "skeleton",
-                },
-              }}
-              // columnVisibilityModel={columnVisibilityModel}
-              // onColumnVisibilityModelChange={(newModel) =>
-              //   setColumnVisibilityModel(newModel)
-              // }
-            />
-            {/* Conditionally render the PipelineActualDefinitionComponent dialog */}
-            {showDialog && selectedPipelineId && (
-              <PipelineActualDefinition
-                pipelineId={selectedPipelineId}
-                onClose={handleDialogClose}
-              />
-            )}
+        <Box
+          display="flex"
+          flexDirection="column"
+          sx={{ marginBottom: "20px" }}
+          className="header"
+        >
+          <Box role="presentation" onClick={handleClick}>
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link
+                underline="hover"
+                color="var(--boston-blue)"
+                to="/"
+                component={RouterLink}
+              >
+                Home
+              </Link>
+              <Typography
+                sx={{ color: "var(--boston-blue)", fontWeight: "600" }}
+              >
+                PipelineList
+              </Typography>
+            </Breadcrumbs>
           </Box>
+          <Header title="Pipeline List" />
+        </Box>
+
+        <Box className="search-container">
+          <IconButton className="icon">
+            <SearchIcon />
+          </IconButton>
+          <TextField
+            className="search-box"
+            variant="outlined"
+            size="small"
+            placeholder="Search"
+            value={searchQuery} // Bind the value to state
+            onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
+            sx={{
+              backgroundColor: "whitesmoke",
+              border: "none",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  border: "none",
+                },
+              },
+            }}
+            fullWidth
+          />
+        </Box>
+      </Box>
+      <Box className="container ">
+        <Box className="container pipeline-list-container">
+          <DataGrid
+            sx={{ boxShadow: "4", height: 500 }}
+            loading={loading}
+            columns={columns}
+            rows={filteredRows}
+            rowHeight={40}
+            columnHeaderHeight={45}
+            disableRowSelectionOnClick
+            pagination
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[10, 15, 20]}
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+              loadingOverlay: {
+                variant: "skeleton",
+                noRowsVariant: "skeleton",
+              },
+            }}
+            columnVisibilityModel={columnVisibilityModel} // Apply column visibility model
+            onColumnVisibilityModelChange={
+              (newModel) => setColumnVisibilityModel(newModel) // Update state when column visibility changes
+            }
+          />
+          {/* Conditionally render the PipelineActualDefinitionComponent dialog */}
+          {showDialog && selectedPipelineId && (
+            <PipelineActualDefinition
+              pipelineId={selectedPipelineId}
+              onClose={handleDialogClose}
+            />
+          )}
         </Box>
       </Box>
     </Box>

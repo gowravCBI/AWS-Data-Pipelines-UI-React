@@ -11,12 +11,14 @@ export class PipelineService {
         const url = `${this.serviceUrl}/descriptions`;
         try {
             const response = await axios.get<PipelineDescription[]>(url);
+            console.log("raw...", response.data);
+
             // Map through the response data to parse date fields in the 'fields' object
             const parsedData = response.data.map(item => ({
                 ...item, // Spread the original item properties
                 fields: parseDatesInObject(item.fields) // Convert date strings in 'fields' to Date objects
             }));
-            // console.log("Parsed Pipeline Description ==> ", parsedData);
+            console.log("Parsed Pipeline Description ==> ", parsedData);
             return parsedData;
         } catch (error) {
             console.error('Error fetching pipeline description list:', error);

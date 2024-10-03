@@ -15,7 +15,12 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import Header from "../../components/Header";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridColumnVisibilityModel,
+  GridToolbar,
+} from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
@@ -94,10 +99,10 @@ const PipelineDetails = () => {
     sphere: pipeline.sphere,
     type: pipeline.type,
     status: pipeline.status,
-    actualStartTime: pipeline.actualStartTime,
-    actualEndTime: pipeline.actualEndTime,
     scheduledStartTime: pipeline.scheduledStartTime,
     scheduledEndTime: pipeline.scheduledEndTime,
+    actualStartTime: pipeline.actualStartTime,
+    actualEndTime: pipeline.actualEndTime,
     input: pipeline.input,
     version: pipeline.version,
     componentParent: pipeline.componentParent,
@@ -111,11 +116,36 @@ const PipelineDetails = () => {
     // row.type.toString
   );
 
+  // Add state for column visibility
+  const [columnVisibilityModel, setColumnVisibilityModel] =
+    useState<GridColumnVisibilityModel>({
+      id: true,
+      name: true,
+      type: true,
+      scheduledStartTime: true,
+      status: true,
+      actualStartTime: true,
+      actualEndTime: true,
+      // Set the rest of the columns to false (hidden)
+      parent: false,
+      triesLeft: false,
+      headAttempt: false,
+      attemptCount: false,
+      resource: false,
+      resourceId: false,
+      resourceRegion: false,
+      sphere: false,
+      scheduledEndTime: false,
+      input: false,
+      version: false,
+      componentParent: false,
+    });
+
   const columns: GridColDef[] = [
     {
       field: "id",
       headerName: "ID",
-      width: 310,
+      width: 300,
       align: "center",
       headerAlign: "center",
       type: "string",
@@ -124,51 +154,164 @@ const PipelineDetails = () => {
     {
       field: "name",
       headerName: "Name",
-      width: 310,
+      width: 290,
       align: "center",
       headerAlign: "center",
       type: "string",
-      hideable: false,
+      hideable: true,
+    },
+    {
+      field: "parent",
+      headerName: "Parent",
+      width: 250,
+      align: "center",
+      headerAlign: "center",
+      type: "string",
+      hideable: true,
+    },
+    {
+      field: "triesLeft",
+      headerName: "Tries Left",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      type: "number",
+      hideable: true,
+    },
+    {
+      field: "headAttempt",
+      headerName: "Head Attempt",
+      width: 350,
+      align: "center",
+      headerAlign: "center",
+      type: "number",
+      hideable: true,
+    },
+    {
+      field: "attemptCount",
+      headerName: "Attempt Count",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      type: "number",
+      hideable: true,
+    },
+    {
+      field: "resource",
+      headerName: "Resource",
+      width: 250,
+      align: "center",
+      headerAlign: "center",
+      type: "string",
+      hideable: true,
+    },
+    {
+      field: "resourceId",
+      headerName: "Resource Id",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      type: "string",
+      hideable: true,
+    },
+    {
+      field: "resourceRegion",
+      headerName: "Resource Region",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      type: "string",
+      hideable: true,
+    },
+    {
+      field: "sphere",
+      headerName: "Sphere",
+      type: "string",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
     },
     {
       field: "type",
       headerName: "Type",
-      width: 160,
+      width: 150,
       align: "center",
       headerAlign: "center",
       type: "string",
+      hideable: true,
     },
     {
       field: "scheduledStartTime",
       headerName: "Scheduled Start Time",
       type: "dateTime",
+      width: 190,
+      align: "center",
+      headerAlign: "center",
+      hideable: true,
+    },
+    {
+      field: "scheduledEndTime",
+      headerName: "Scheduled End Time",
+      type: "dateTime",
       width: 160,
       align: "center",
       headerAlign: "center",
+      hideable: true,
     },
     {
       field: "status",
       headerName: "Status",
-      width: 140,
+      width: 120,
       align: "center",
       headerAlign: "center",
       type: "string",
+      hideable: true,
     },
     {
       field: "actualStartTime",
       headerName: "Actual Start Time",
-      width: 160,
+      width: 170,
       align: "center",
       headerAlign: "center",
       type: "dateTime",
+      hideable: true,
     },
     {
       field: "actualEndTime",
       headerName: "Actual End Time",
-      width: 160,
+      width: 170,
       align: "center",
       headerAlign: "center",
       type: "dateTime",
+      hideable: true,
+    },
+    {
+      field: "input",
+      headerName: "Input",
+      width: 300,
+      align: "center",
+      headerAlign: "center",
+      type: "string",
+      hideable: true,
+    },
+    {
+      field: "version",
+      headerName: "Version",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      type: "number",
+      hideable: true,
+    },
+    {
+      field: "componentParent",
+      headerName: "Component Parent",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+      type: "string",
+      hideable: true,
     },
   ];
   function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -344,6 +487,10 @@ const PipelineDetails = () => {
               noRowsVariant: "skeleton",
             },
           }}
+          columnVisibilityModel={columnVisibilityModel} // Apply column visibility model
+          onColumnVisibilityModelChange={
+            (newModel) => setColumnVisibilityModel(newModel) // Update state when column visibility changes
+          }
         />
       </Box>
     </Box>
