@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   Box,
   Dialog,
@@ -7,6 +7,7 @@ import {
   Tooltip,
   CircularProgress,
   DialogTitle,
+  DialogActions,
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import GetAppRounded from "@mui/icons-material/GetAppRounded";
@@ -35,7 +36,6 @@ export const PipelineActualDefinition: React.FC<
         const data = await pipelineService.getPipelineActualDefinition(
           pipelineId
         );
-
         setPipelineActualDefinition(data);
         setLoading(false);
       } catch (error) {
@@ -61,61 +61,60 @@ export const PipelineActualDefinition: React.FC<
     window.URL.revokeObjectURL(url);
   };
 
-  // Close the dialog
-  const closeDialog = () => {
-    onClose();
-  };
-
   return (
-    <Dialog open={true} onClose={closeDialog} maxWidth="md" fullWidth>
-      <Box className="view-header">
-        <DialogTitle variant="h3" sx={{ fontWeight: "bold" }}>
-          Actual Definition
-        </DialogTitle>
-        <Box
-          className="icons"
-          display="flex"
-          justifyContent="space-around"
-          gap={1}
-        >
-          <Tooltip title="Download">
-            <IconButton onClick={downloadJsonFile}>
-              <GetAppRounded sx={{ color: "var(--white)" }} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Close">
-            <IconButton onClick={closeDialog}>
-              <CloseRoundedIcon sx={{ color: "var(--white)" }} />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
-
-      <DialogContent dividers sx={{ padding: 0 }}>
-        <Box className="view-content">
-          {loading ? (
+    <Fragment>
+      <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
+        <Box className="view-header">
+          <DialogTitle variant="h3" sx={{ fontWeight: "bold" }}>
+            Actual Definition
+          </DialogTitle>
+          <DialogActions>
             <Box
+              className="icons"
               display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height={300}
+              justifyContent="space-around"
+              gap={1}
             >
-              <CircularProgress />
+              <Tooltip title="Download">
+                <IconButton onClick={downloadJsonFile}>
+                  <GetAppRounded sx={{ color: "var(--white)" }} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Close">
+                <IconButton onClick={onClose}>
+                  <CloseRoundedIcon sx={{ color: "var(--white)" }} />
+                </IconButton>
+              </Tooltip>
             </Box>
-          ) : (
-            <Box
-              component="pre"
-              sx={{
-                whiteSpace: "pre-wrap", // Ensure text wraps correctly
-                wordWrap: "break-word", // Prevent long words from overflowing
-                overflowY: "auto", // Make it scrollable vertically if content exceeds
-              }}
-            >
-              {JSON.stringify(pipelineActualDefinition, null, 2)}
-            </Box>
-          )}
+          </DialogActions>
         </Box>
-      </DialogContent>
-    </Dialog>
+
+        <DialogContent dividers sx={{ padding: 0 }}>
+          <Box className="view-content">
+            {loading ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height={300}
+              >
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Box
+                component="pre"
+                sx={{
+                  whiteSpace: "pre-wrap", // Ensure text wraps correctly
+                  wordWrap: "break-word", // Prevent long words from overflowing
+                  overflowY: "auto", // Make it scrollable vertically if content exceeds
+                }}
+              >
+                {JSON.stringify(pipelineActualDefinition, null, 2)}
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+      </Dialog>
+    </Fragment>
   );
 };

@@ -23,16 +23,25 @@
 }
 
 .pipeline-list-container {
-
     .pipeline-id-link {
         color: var(--blue);
         cursor: pointer;
         font-weight: bold;
         text-decoration: none;
     }
-
 }
 
+/* Style for the Data Grid's toolbar container */
 .MuiDataGrid-toolbarContainer {
-    flex-direction: row-reverse; // Example for styling buttons inside the toolbar
+    flex-direction: row-reverse;
+}
+
+/* Actions Cell Item Styles */
+.actions-cell-item {
+    color: var(--boston-blue) !important;
+    font-weight: 550 !important;
+
+    .MuiSvgIcon-root {
+        color: var(--boston-blue);
+    }
 }

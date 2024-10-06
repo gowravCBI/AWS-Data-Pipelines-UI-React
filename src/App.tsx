@@ -1,7 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Layout from "./global/Layout";
 import PipelineList from "./pages/pipeline-list/PipelineList";
 import PipelineDetails from "./pages/pipeline-details/PipelineDetails";
+import { Box, Typography, Button } from "@mui/material";
 
 const App = () => {
   return (
@@ -16,12 +22,46 @@ const App = () => {
                   path="details/:pipelineId"
                   element={<PipelineDetails />}
                 />
+                {/* Add a fallback route for unmatched paths */}
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
           </Layout>
         </Router>
       </main>
     </div>
+  );
+};
+// A simple NotFound component (you can customize this)
+const NotFound = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+      bgcolor="background.default"
+      p={3}
+      textAlign="center"
+    >
+      <Typography variant="h1" color="error">
+        404
+      </Typography>
+      <Typography variant="h6" color="text.primary">
+        Page Not Found
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate("/")}
+        sx={{ marginTop: 2 }}
+      >
+        Go to Home
+      </Button>
+    </Box>
   );
 };
 

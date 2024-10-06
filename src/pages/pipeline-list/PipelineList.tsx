@@ -2,47 +2,41 @@ import Header from "../../components/Header";
 import Box from "@mui/material/Box";
 import {
   DataGrid,
+  GridActionsCellItem,
   GridColDef,
   GridColumnVisibilityModel,
+  GridRowId,
   GridToolbar,
 } from "@mui/x-data-grid";
 import "./PipelineList.scss";
-import {
-  Breadcrumbs,
-  IconButton,
-  Menu,
-  MenuItem,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Breadcrumbs, IconButton, TextField, Typography } from "@mui/material";
 import Link from "@mui/material/Link";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import AccountTreeRounded from "@mui/icons-material/AccountTreeRounded";
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { PipelineDescription } from "../../services/types";
 import { PipelineActualDefinition } from "../pipeline-actual-definition/PipelineActualDefinition";
 
 const PipelineList = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
-    null
-  );
   const [pipelines, setPipelines] = useState<PipelineDescription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [showDialog, setShowDialog] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
+  const [openDefinitionDialog, setOpenDefinitionDialog] =
+    useState<boolean>(false);
+  const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
+    null
+  );
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchPipelines = async () => {
       try {
         const data = await pipelineService.getPipelineDescriptionList();
-        console.log("============", data);
+        // console.log("============", data);
         setPipelines(data);
         setLoading(false);
       } catch (err) {
@@ -57,33 +51,6 @@ const PipelineList = () => {
 
     fetchPipelines();
   }, []); // Empty dependency array to run only on mount
-
-  // Handle opening the menu
-  const handleMenuClick = (
-    event: React.MouseEvent<HTMLElement>,
-    pipelineId: string
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedPipelineId(pipelineId);
-  };
-
-  // Handle closing the menu
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedPipelineId(null);
-  };
-  // Handle opening the dialog
-  const handleDialogOpen = (pipelineId: string) => {
-    handleMenuClose(); // Close the menu before opening the dialog
-    setSelectedPipelineId(pipelineId); // Set the pipelineId to pass to the dialog
-    setShowDialog(true);
-  };
-
-  // Handle closing the dialog
-  const handleDialogClose = () => {
-    setShowDialog(false);
-    setSelectedPipelineId(null);
-  };
 
   // Transform data for DataGrid
   const rows = pipelines.map((pipeline) => ({
@@ -173,7 +140,7 @@ const PipelineList = () => {
       field: "name",
       headerName: "Pipeline Name",
       type: "string",
-      width: 240,
+      width: 250,
       align: "center",
       headerAlign: "center",
       hideable: true,
@@ -334,58 +301,57 @@ const PipelineList = () => {
     {
       field: "actions",
       headerName: "Actions",
-      width: 100,
-      align: "center",
-      headerAlign: "center",
+      type: "actions",
+      width: 80,
       hideable: false,
-      renderCell: (params) => (
-        <>
-          <IconButton
-            onClick={(event) => handleMenuClick(event, params.row.id)}
-            aria-controls="actions-menu"
-            aria-haspopup="true"
-          >
-            <MoreVertIcon />
-          </IconButton>
-
-          {/* Dropdown menu */}
-          <Menu
-            id="actions-menu"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl) && selectedPipelineId === params.row.id}
-            onClose={handleMenuClose}
-            sx={{
-              "& .MuiPaper-root": {
-                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-              },
-            }}
-          >
-            <MenuItem
-              onClick={() => console.log(`Run pipeline ${params.row.id}`)}
-              sx={{ color: "var(--boston-blue)" }}
-            >
-              <PlayArrowRoundedIcon sx={{ fontSize: 30, marginRight: "8px" }} />
-              Run
-            </MenuItem>
-            <MenuItem
-              onClick={() => console.log(`Stop pipeline ${params.row.id}`)}
-              sx={{ color: "var(--boston-blue)" }}
-            >
-              <StopRoundedIcon sx={{ fontSize: 30, marginRight: "8px" }} />
-              Stop
-            </MenuItem>
-            <MenuItem
-              onClick={() => handleDialogOpen(params.row.id)} // Open dialog here
-              sx={{ color: "#224958" }}
-            >
-              <AccountTreeRounded sx={{ fontSize: 30, marginRight: "8px" }} />
-              Actual Definition
-            </MenuItem>
-          </Menu>
-        </>
-      ),
+      getActions: (params) => [
+        <GridActionsCellItem
+          className="actions-cell-item"
+          // sx={{ color: "var(--boston-blue)", fontWeight: 600 }}
+          icon={<PlayArrowRoundedIcon />}
+          label="Run"
+          onClick={handleRun(params.id)}
+          showInMenu
+        />,
+        <GridActionsCellItem
+          className="actions-cell-item"
+          icon={<StopRoundedIcon />}
+          label="Stop"
+          onClick={handleStop(params.id)}
+          showInMenu
+        />,
+        <GridActionsCellItem
+          className="actions-cell-item"
+          icon={<AccountTreeRounded />}
+          label="Actual Definition"
+          onClick={handleOpenActualDefinition(params.id)}
+          showInMenu
+        />,
+      ],
     },
   ];
+
+  const handleRun = useCallback(
+    (id: GridRowId) => () => {
+      console.log("run ", id);
+    },
+    []
+  );
+
+  const handleStop = useCallback(
+    (id: GridRowId) => () => {
+      console.log("stop ", id);
+    },
+    []
+  );
+  const handleOpenActualDefinition = useCallback(
+    (id: GridRowId) => () => {
+      setSelectedPipelineId(String(id));
+      setOpenDefinitionDialog(true);
+    },
+    []
+  );
+
   function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
     console.info("You clicked a breadcrumb.");
@@ -476,10 +442,10 @@ const PipelineList = () => {
             }
           />
           {/* Conditionally render the PipelineActualDefinitionComponent dialog */}
-          {showDialog && selectedPipelineId && (
+          {openDefinitionDialog && selectedPipelineId && (
             <PipelineActualDefinition
               pipelineId={selectedPipelineId}
-              onClose={handleDialogClose}
+              onClose={() => setOpenDefinitionDialog(false)}
             />
           )}
         </Box>
