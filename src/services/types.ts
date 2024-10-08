@@ -59,7 +59,8 @@ export interface RunDetails {
     componentParent: string,
 }
 
-export interface PipelineActualDefinition {
-    id: string,
-    // Add other relevant fields
-}
+export type PipelineActualDefinition =
+    | string
+    | {
+        [key: string]: string | number | boolean | PipelineActualDefinition; // Recursive for sub-objects
+    };
