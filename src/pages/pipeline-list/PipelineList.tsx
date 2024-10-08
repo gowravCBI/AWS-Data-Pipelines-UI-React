@@ -20,17 +20,18 @@ import { Link as RouterLink } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { PipelineDescription } from "../../services/types";
 import { PipelineActualDefinition } from "../pipeline-actual-definition/PipelineActualDefinition";
+import { useSnackbar } from "../../components/Snackbar";
 
 const PipelineList = () => {
   const [pipelines, setPipelines] = useState<PipelineDescription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [openDefinitionDialog, setOpenDefinitionDialog] =
     useState<boolean>(false);
   const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null
   );
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const fetchPipelines = async () => {
@@ -39,10 +40,10 @@ const PipelineList = () => {
         // console.log("============", data);
         setPipelines(data);
         setLoading(false);
-      } catch (err) {
-        console.log(error);
-        setError("Failed to fetch pipeline pipelines");
-        console.error(err);
+        showSnackbar("Pipeline List fetched successfully!", "success");
+      } catch (error) {
+        console.error("Failed to fetch Pipeline List:", error);
+        showSnackbar("Failed to fetch Pipeline List", "error");
         setLoading(false);
       } finally {
         setLoading(false);
@@ -354,7 +355,6 @@ const PipelineList = () => {
 
   function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
-    console.info("You clicked a breadcrumb.");
   }
   const paginationModel = { page: 0, pageSize: 10 };
   return (

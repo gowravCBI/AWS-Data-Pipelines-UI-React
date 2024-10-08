@@ -13,6 +13,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import GetAppRounded from "@mui/icons-material/GetAppRounded";
 import { pipelineService } from "../../services/PipelineService";
 import "./PipelineActualDefinition.scss";
+import { useSnackbar } from "../../components/Snackbar";
+import { PipelineActualDefinition as PipelineActualDefinitionType } from "../../services/types";
 
 // Define the props to accept data via the dialog
 interface PipelineActualDefinitionProps {
@@ -25,8 +27,9 @@ export const PipelineActualDefinition: React.FC<
   PipelineActualDefinitionProps
 > = ({ pipelineId, onClose }) => {
   const [pipelineActualDefinition, setPipelineActualDefinition] =
-    useState<Record<string, any> | null>(null);
+    useState<PipelineActualDefinitionType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     // Fetch actual pipeline definition data
@@ -38,8 +41,14 @@ export const PipelineActualDefinition: React.FC<
         );
         setPipelineActualDefinition(data);
         setLoading(false);
+        showSnackbar(
+          "Pipeline actual definition fetched successfully!",
+          "success"
+        );
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching pipeline actual definition:", error);
+        showSnackbar("Error fetching pipeline actual definition", "error");
         setLoading(false);
       }
     };
@@ -59,6 +68,10 @@ export const PipelineActualDefinition: React.FC<
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+    showSnackbar(
+      "Actual Definition JSON file downloaded successfully!",
+      "success"
+    );
   };
 
   return (
@@ -98,7 +111,7 @@ export const PipelineActualDefinition: React.FC<
                 alignItems="center"
                 height={300}
               >
-                <CircularProgress />
+                <CircularProgress sx={{ color: "white" }} />
               </Box>
             ) : (
               <Box

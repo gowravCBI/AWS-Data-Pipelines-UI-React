@@ -25,11 +25,18 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { RunDetails, PipelineTag } from "../../services/types";
+import { useSnackbar } from "../../components/Snackbar";
 import "./PipelineDetails.scss";
 
 const PipelineDetails = () => {
   const { pipelineId } = useParams<{ pipelineId: string }>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
   const location = useLocation(); // Access the location
+  const { showSnackbar } = useSnackbar();
+  const [pipelineRunDetails, setPipelineRunDetails] = useState<RunDetails[]>(
+    []
+  );
   const {
     pipelineName,
     pipelineTags,
@@ -55,13 +62,6 @@ const PipelineDetails = () => {
     ? new Date(scheduledEndTime).toLocaleString() // Format date as needed
     : "-";
 
-  const [pipelineRunDetails, setPipelineRunDetails] = useState<RunDetails[]>(
-    []
-  );
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
-
   useEffect(() => {
     const fetchPipelinesRunDetails = async () => {
       setLoading(true);
@@ -72,10 +72,10 @@ const PipelineDetails = () => {
         // console.log("--------", data);
         setPipelineRunDetails(data);
         setLoading(false);
-      } catch (err) {
-        console.log(error);
-        setError("Failed to fetch pipeline pipelines");
-        console.error(err);
+        showSnackbar("List Runs of Pipeline fetched successfully!", "success");
+      } catch (error) {
+        console.error("Failed to fetch List Runs of Pipeline:", error);
+        showSnackbar("Failed to fetch List Runs of Pipeline", "error");
         setLoading(false);
       } finally {
         setLoading(false);
@@ -316,7 +316,6 @@ const PipelineDetails = () => {
   ];
   function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
-    console.info("You clicked a breadcrumb.");
   }
   const paginationModel = { page: 0, pageSize: 5 };
   return (
@@ -404,7 +403,6 @@ const PipelineDetails = () => {
       <Box className="container">
         <Box
           display="flex"
-          // justifyContent="space-around"
           alignItems="flex-start"
           sx={{
             marginBottom: "20px",

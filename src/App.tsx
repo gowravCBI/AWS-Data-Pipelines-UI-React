@@ -50,7 +50,7 @@ const NotFound = () => {
       <Typography variant="h1" color="error">
         404
       </Typography>
-      <Typography variant="h6" color="text.primary">
+      <Typography variant="h5" color="primary" fontWeight="600">
         Page Not Found
       </Typography>
       <Button
