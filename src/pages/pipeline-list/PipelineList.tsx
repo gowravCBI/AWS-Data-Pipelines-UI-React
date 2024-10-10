@@ -1,26 +1,25 @@
 import Header from "../../components/Header";
 import Box from "@mui/material/Box";
 import {
-  DataGrid,
   GridActionsCellItem,
   GridColDef,
   GridColumnVisibilityModel,
   GridRowId,
-  GridToolbar,
 } from "@mui/x-data-grid";
 import "./PipelineList.scss";
-import { Breadcrumbs, IconButton, TextField, Typography } from "@mui/material";
+import { Breadcrumbs, Typography } from "@mui/material";
 import Link from "@mui/material/Link";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import AccountTreeRounded from "@mui/icons-material/AccountTreeRounded";
-import SearchIcon from "@mui/icons-material/Search";
 import { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { PipelineDescription } from "../../services/types";
 import { PipelineActualDefinition } from "../pipeline-actual-definition/PipelineActualDefinition";
 import { useSnackbar } from "../../components/Snackbar";
+import DataGridTable from "../../components/DataGridTable";
+import SearchBox from "../../components/SearchBox";
 
 const PipelineList = () => {
   const [pipelines, setPipelines] = useState<PipelineDescription[]>([]);
@@ -370,7 +369,7 @@ const PipelineList = () => {
           display="flex"
           flexDirection="column"
           sx={{ marginBottom: "20px" }}
-          className="header"
+          className="header-breadcrumbs-container"
         >
           <Box role="presentation" onClick={handleClick}>
             <Breadcrumbs aria-label="breadcrumb">
@@ -391,64 +390,26 @@ const PipelineList = () => {
           </Box>
           <Header title="Pipeline List" />
         </Box>
-
-        <Box className="search-container">
-          <IconButton className="icon">
-            <SearchIcon />
-          </IconButton>
-          <TextField
-            className="search-box"
-            variant="outlined"
-            size="small"
-            placeholder="Search"
-            value={searchQuery} // Bind the value to state
-            onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
-            sx={{
-              backgroundColor: "whitesmoke",
-              border: "none",
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  border: "none",
-                },
-              },
-            }}
-            fullWidth
-          />
-        </Box>
+        <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </Box>
-      <Box className="container ">
-        <Box className="container pipeline-list-container">
-          <DataGrid
-            sx={{ boxShadow: "4", height: 500 }}
-            loading={loading}
-            columns={columns}
-            rows={filteredRows}
-            rowHeight={40}
-            columnHeaderHeight={45}
-            disableRowSelectionOnClick
-            pagination
-            initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[10, 15, 20]}
-            slots={{ toolbar: GridToolbar }}
-            slotProps={{
-              loadingOverlay: {
-                variant: "skeleton",
-                noRowsVariant: "skeleton",
-              },
-            }}
-            columnVisibilityModel={columnVisibilityModel} // Apply column visibility model
-            onColumnVisibilityModelChange={
-              (newModel) => setColumnVisibilityModel(newModel) // Update state when column visibility changes
-            }
+      <Box className="container pipeline-list-container">
+        <DataGridTable
+          height={500}
+          loading={loading}
+          columns={columns}
+          rows={filteredRows}
+          paginationModel={paginationModel}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={setColumnVisibilityModel}
+        />
+
+        {/* Conditionally render the PipelineActualDefinitionComponent dialog */}
+        {openDefinitionDialog && selectedPipelineId && (
+          <PipelineActualDefinition
+            pipelineId={selectedPipelineId}
+            onClose={() => setOpenDefinitionDialog(false)}
           />
-          {/* Conditionally render the PipelineActualDefinitionComponent dialog */}
-          {openDefinitionDialog && selectedPipelineId && (
-            <PipelineActualDefinition
-              pipelineId={selectedPipelineId}
-              onClose={() => setOpenDefinitionDialog(false)}
-            />
-          )}
-        </Box>
+        )}
       </Box>
     </Box>
   );

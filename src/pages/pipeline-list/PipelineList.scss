@@ -1,27 +1,3 @@
-.search-container {
-    display: flex;
-    height: 100%;
-    background-color: whitesmoke;
-    border-radius: 0.25rem;
-    border: 0.1px solid lightgray;
-    width: 20rem;
-
-    .icon {
-        transform: rotate(90deg);
-        margin-left: 10px;
-    }
-
-    .search-box {
-        border: none;
-        background-color: whitesmoke;
-    }
-
-    .search-box:focus {
-        box-shadow: none;
-        border: none;
-    }
-}
-
 .pipeline-list-container {
     .pipeline-id-link {
         color: var(--blue);

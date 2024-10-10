@@ -1,7 +1,6 @@
 import {
   Box,
   Breadcrumbs,
-  IconButton,
   Link,
   Table,
   TableBody,
@@ -9,24 +8,18 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
 import Header from "../../components/Header";
-import {
-  DataGrid,
-  GridColDef,
-  GridColumnVisibilityModel,
-  GridToolbar,
-} from "@mui/x-data-grid";
+import { GridColDef, GridColumnVisibilityModel } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { RunDetails, PipelineTag } from "../../services/types";
 import { useSnackbar } from "../../components/Snackbar";
 import "./PipelineDetails.scss";
+import DataGridTable from "../../components/DataGridTable";
+import SearchBox from "../../components/SearchBox";
 
 const PipelineDetails = () => {
   const { pipelineId } = useParams<{ pipelineId: string }>();
@@ -67,7 +60,7 @@ const PipelineDetails = () => {
       setLoading(true);
       try {
         const data = await pipelineService.getPipelineRunDetails(
-          pipelineId || ""
+          pipelineId ?? ""
         );
         // console.log("--------", data);
         setPipelineRunDetails(data);
@@ -145,7 +138,7 @@ const PipelineDetails = () => {
     {
       field: "id",
       headerName: "ID",
-      width: 300,
+      width: 290,
       align: "center",
       headerAlign: "center",
       type: "string",
@@ -154,7 +147,7 @@ const PipelineDetails = () => {
     {
       field: "name",
       headerName: "Name",
-      width: 290,
+      width: 280,
       align: "center",
       headerAlign: "center",
       type: "string",
@@ -262,7 +255,7 @@ const PipelineDetails = () => {
     {
       field: "status",
       headerName: "Status",
-      width: 120,
+      width: 110,
       align: "center",
       headerAlign: "center",
       type: "string",
@@ -324,7 +317,7 @@ const PipelineDetails = () => {
         display="flex"
         flexDirection="column"
         sx={{ marginBottom: "20px" }}
-        className="header"
+        className="container header-breadcrumbs-container"
       >
         <Box role="presentation" onClick={handleClick}>
           <Breadcrumbs aria-label="breadcrumb">
@@ -359,49 +352,28 @@ const PipelineDetails = () => {
         sx={{ marginBottom: "20px" }}
         className="details-search-container container"
       >
-        <Box>
-          <TableContainer className="details-table">
+        <Box className="details-table">
+          <TableContainer>
             <Table>
               <TableHead></TableHead>
               <TableBody>
                 <TableRow>
                   <TableCell>Pipeline Id</TableCell>
-                  <TableCell>{pipelineId}</TableCell>
+                  <TableCell>{pipelineId ?? "-"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Pipeline Name</TableCell>
-                  <TableCell>{pipelineName}</TableCell>
+                  <TableCell>{pipelineName ?? "-"}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
         </Box>
-        <Box className="search-container">
-          <IconButton className="icon">
-            <SearchIcon />
-          </IconButton>
-          <TextField
-            className="search-box"
-            variant="outlined"
-            size="small"
-            placeholder="Search"
-            value={searchQuery} // Bind the value to state
-            onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
-            sx={{
-              backgroundColor: "whitesmoke",
-              border: "none",
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  border: "none",
-                },
-              },
-            }}
-            fullWidth
-          />
-        </Box>
+        <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </Box>
       <Box className="container">
         <Box
+          className="schedule-info-tags-container container"
           display="flex"
           alignItems="flex-start"
           sx={{
@@ -411,10 +383,9 @@ const PipelineDetails = () => {
             boxShadow: "2",
             marginLeft: "0px",
           }}
-          className="schedule-info-tags-container container"
         >
-          <Box>
-            <TableContainer className="schedule-info-table">
+          <Box className="schedule-info-table">
+            <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -432,14 +403,14 @@ const PipelineDetails = () => {
                   </TableRow>
                   <TableRow>
                     <TableCell>Period</TableCell>
-                    <TableCell>{scheduledPeriod || "-"}</TableCell>
+                    <TableCell>{scheduledPeriod ?? "-"}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
           </Box>
-          <Box sx={{ marginLeft: "80px" }}>
-            <TableContainer className="tags-table">
+          <Box className="tags-table" sx={{ marginLeft: "80px" }}>
+            <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -449,15 +420,15 @@ const PipelineDetails = () => {
                 <TableBody>
                   <TableRow>
                     <TableCell>Environment</TableCell>
-                    <TableCell>{pipelineTags?.Environment || "-"}</TableCell>
+                    <TableCell>{pipelineTags?.Environment ?? "-"}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell>{pipelineTags?.Name || "-"}</TableCell>
+                    <TableCell>{pipelineTags?.Name ?? "-"}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Owner</TableCell>
-                    <TableCell>{pipelineTags?.Owner || "-"}</TableCell>
+                    <TableCell>{pipelineTags?.Owner ?? "-"}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -465,30 +436,15 @@ const PipelineDetails = () => {
           </Box>
         </Box>
       </Box>
-
       <Box className="container">
-        <DataGrid
-          sx={{ boxShadow: "4", height: 350 }}
+        <DataGridTable
+          height={350}
           loading={loading}
-          rows={filteredRows}
           columns={columns}
-          rowHeight={40}
-          columnHeaderHeight={45}
-          disableRowSelectionOnClick
-          pagination
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[5, 10, 15]}
-          slots={{ toolbar: GridToolbar }}
-          slotProps={{
-            loadingOverlay: {
-              variant: "skeleton",
-              noRowsVariant: "skeleton",
-            },
-          }}
-          columnVisibilityModel={columnVisibilityModel} // Apply column visibility model
-          onColumnVisibilityModelChange={
-            (newModel) => setColumnVisibilityModel(newModel) // Update state when column visibility changes
-          }
+          rows={filteredRows}
+          paginationModel={paginationModel}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={setColumnVisibilityModel}
         />
       </Box>
     </Box>

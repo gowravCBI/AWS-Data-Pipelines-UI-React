@@ -1,5 +1,11 @@
 // src/components/CustomSnackbar.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 import { Snackbar, Alert, AlertColor } from "@mui/material";
 
 // Define Snackbar context types
@@ -7,8 +13,8 @@ interface SnackbarContextType {
   showSnackbar: (
     message: string,
     severity?: AlertColor, // "success" | "error" | "info" | "warning"
-    duration?: number,      // Custom duration for the Snackbar
-    onClose?: () => void    // Callback function when the Snackbar closes
+    duration?: number, // Custom duration for the Snackbar
+    onClose?: () => void // Callback function when the Snackbar closes
   ) => void;
 }
 
@@ -18,25 +24,33 @@ const SnackbarContext = createContext<SnackbarContextType>({
 });
 
 // Custom Snackbar Provider Component
-export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>("success");
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertColor>("success");
   const [snackbarDuration, setSnackbarDuration] = useState<number>(6000);
-  const [onSnackbarClose, setOnSnackbarClose] = useState<(() => void) | null>(null);
+  const [onSnackbarClose, setOnSnackbarClose] = useState<(() => void) | null>(
+    null
+  );
 
-  const showSnackbar = (
-    message: string,
-    severity: AlertColor = "success",  // Default severity is "success"
-    duration: number = 6000,           // Default duration is 6000ms (6 seconds)
-    onClose?: () => void               // Optional close callback
-  ) => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarDuration(duration);
-    setOnSnackbarClose(() => onClose || null);
-    setSnackbarOpen(true);
-  };
+  const showSnackbar = useCallback(
+    (
+      message: string,
+      severity: AlertColor = "success", // Default severity is "success"
+      duration: number = 6000, // Default duration is 6000ms (6 seconds)
+      onClose?: () => void // Optional close callback
+    ) => {
+      setSnackbarMessage(message);
+      setSnackbarSeverity(severity);
+      setSnackbarDuration(duration);
+      setOnSnackbarClose(() => onClose || null);
+      setSnackbarOpen(true);
+    },
+    [] // Dependencies array is empty to ensure a stable reference
+  );
 
   const handleClose = () => {
     setSnackbarOpen(false);
@@ -54,7 +68,12 @@ export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({ children }
         onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }} // Positioning the Snackbar
       >
-        <Alert onClose={handleClose} severity={snackbarSeverity}  variant="filled" sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
