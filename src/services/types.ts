@@ -35,7 +35,9 @@ export interface PipelineDescription {
     description?: string,
     tags?: PipelineTag,
 }
-
+export interface PipelineDescriptionResponse {
+    pipelineDescriptionList: PipelineDescription[];
+}
 
 export interface RunDetails {
     id: string,

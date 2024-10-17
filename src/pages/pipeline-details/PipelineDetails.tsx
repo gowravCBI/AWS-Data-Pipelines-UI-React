@@ -310,7 +310,7 @@ const PipelineDetails = () => {
   function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
   }
-  const paginationModel = { page: 0, pageSize: 5 };
+  const paginationModel = { page: 0, pageSize: 10 };
   return (
     <Box className="container container-xxl" mt="20px">
       <Box

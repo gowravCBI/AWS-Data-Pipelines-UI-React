@@ -1,8 +1,10 @@
 import axios from 'axios';
-import { PipelineDescription, PipelineActualDefinition, RunDetails } from './types';
+import { PipelineDescriptionResponse, PipelineDescription, PipelineActualDefinition, RunDetails } from './types';
 import { parseDatesInObject } from '../utility/utils'; // Import the utility function
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/aws-datapipeline';
+
+
 
 export class PipelineService {
     private serviceUrl: string = `${API_URL}`;
@@ -10,11 +12,14 @@ export class PipelineService {
     async getPipelineDescriptionList(): Promise<PipelineDescription[]> {
         const url = `${this.serviceUrl}/descriptions`;
         try {
-            const response = await axios.get<PipelineDescription[]>(url);
+            const response = await axios.get<PipelineDescriptionResponse>(url);
             // console.log("raw...", response.data);
 
+            // Extract pipelineDescriptionList from the response
+            const pipelineDescriptionList = response.data.pipelineDescriptionList;
+
             // Map through the response data to parse date fields in the 'fields' object
-            const parsedData = response.data.map(item => ({
+            const parsedData = pipelineDescriptionList.map(item => ({
                 ...item, // Spread the original item properties
                 fields: parseDatesInObject(item.fields) // Convert date strings in 'fields' to Date objects
             }));
@@ -49,6 +54,27 @@ export class PipelineService {
             return response.data;
         } catch (error) {
             console.error(`Error fetching pipeline actual definition for ${pipelineId}:`, error);
+            throw error;
+        }
+    }
+    async activateDataPipeline(pipelineId: string): Promise<Boolean> {
+        const url = `${this.serviceUrl}/${pipelineId}/activate`;
+        try {
+            await axios.post<void>(url);
+            return true;
+        } catch (error) {
+            console.error(`Error in activating pipeline id ${pipelineId}:`, error);
+            throw error;
+        }
+    }
+
+    async deactivateDataPipeline(pipelineId: string): Promise<Boolean> {
+        const url = `${this.serviceUrl}/${pipelineId}/deactivate`;
+        try {
+            await axios.delete<void>(url);
+            return true;
+        } catch (error) {
+            console.error(`Error in deactivating pipeline Id ${pipelineId}:`, error);
             throw error;
         }
     }

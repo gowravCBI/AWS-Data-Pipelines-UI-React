@@ -38,12 +38,10 @@ const PipelineList = () => {
         const data = await pipelineService.getPipelineDescriptionList();
         // console.log("============", data);
         setPipelines(data);
-        setLoading(false);
         showSnackbar("Pipeline List fetched successfully!", "success");
       } catch (error) {
         console.error("Failed to fetch Pipeline List:", error);
         showSnackbar("Failed to fetch Pipeline List", "error");
-        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -51,6 +49,7 @@ const PipelineList = () => {
 
     fetchPipelines();
   }, []); // Empty dependency array to run only on mount
+
 
   // Transform data for DataGrid
   const rows = pipelines.map((pipeline) => ({
@@ -334,6 +333,20 @@ const PipelineList = () => {
   const handleRun = useCallback(
     (id: GridRowId) => () => {
       console.log("run ", id);
+      setLoading(true); // Set loading state to true when starting the pipeline activation
+      const activatePipelines = async (id: string) => {
+        try {
+          await pipelineService.activateDataPipeline(id);
+          // console.log("============", data);
+          showSnackbar("Pipeline Activated successfully!", "success");
+        } catch (error) {
+          console.error("Failed to Activate Pipeline :", error);
+          showSnackbar("Failed to Activate Pipeline ", "error");
+        } finally {
+          setLoading(false);
+        }
+      };
+      activatePipelines(id as string);
     },
     []
   );
@@ -341,6 +354,20 @@ const PipelineList = () => {
   const handleStop = useCallback(
     (id: GridRowId) => () => {
       console.log("stop ", id);
+      setLoading(true); // Set loading state to true when starting the pipeline activation
+      const deactivatePipelines = async (id: string) => {
+        try {
+          await pipelineService.deactivateDataPipeline(id);
+          // console.log("============", data);
+          showSnackbar("Pipeline Deactivated successfully!", "success");
+        } catch (error) {
+          console.error("Failed to Deactivate Pipeline :", error);
+          showSnackbar("Failed to Deactivate Pipeline ", "error");
+        } finally {
+          setLoading(false);
+        }
+      };
+      deactivatePipelines(id as string);
     },
     []
   );
