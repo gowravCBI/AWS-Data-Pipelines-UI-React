@@ -25,7 +25,7 @@ const DataGridTable = <T extends object>({
   columnVisibilityModel,
   onColumnVisibilityModelChange,
 }: DataGridProps<T>) => {
-  console.log(paginationModel);
+  // console.log(paginationModel);
 
   return (
     <Box className="container">

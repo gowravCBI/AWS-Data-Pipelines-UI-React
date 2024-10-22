@@ -50,7 +50,6 @@ const PipelineList = () => {
     fetchPipelines();
   }, []); // Empty dependency array to run only on mount
 
-
   // Transform data for DataGrid
   const rows = pipelines.map((pipeline) => ({
     id: pipeline.pipelineId,
@@ -122,14 +121,9 @@ const PipelineList = () => {
         <RouterLink
           to={`/pipeline/details/${params.value}`}
           className="pipeline-id-link"
-          state={{
-            pipelineId: params.row.id,
-            pipelineName: params.row.name,
-            scheduledPeriod: params.row.scheduledPeriod,
-            scheduledStartTime: params.row.scheduledStartTime,
-            scheduledEndTime: params.row.scheduledEndTime,
-            pipelineTags: params.row.tags, // Assuming PipelineTag is inside fields
-          }}
+          // state={{
+          //   pipelineId: params.row.id,
+          // }}
         >
           {params.value}
         </RouterLink>
@@ -384,12 +378,12 @@ const PipelineList = () => {
   }
   const paginationModel = { page: 0, pageSize: 10 };
   return (
-    <Box className="container container-xxl" mt="20px">
+    <Box className="container container-xxl">
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="flex-end"
-        sx={{ marginBottom: "20px" }}
+        sx={{ marginBottom: "20px", paddingRight: "30px" }}
         className="container header-search-container"
       >
         <Box

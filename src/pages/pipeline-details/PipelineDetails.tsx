@@ -13,46 +13,33 @@ import {
 import Header from "../../components/Header";
 import { GridColDef, GridColumnVisibilityModel } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
+import { Link as RouterLink, useParams } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
-import { RunDetails, PipelineTag } from "../../services/types";
+import { PipelineField, RunDetails, PipelineTag } from "../../services/types";
 import { useSnackbar } from "../../components/Snackbar";
 import "./PipelineDetails.scss";
 import DataGridTable from "../../components/DataGridTable";
 import SearchBox from "../../components/SearchBox";
+import { formattedDateTime } from "../../utility/utils";
 
 const PipelineDetails = () => {
   const { pipelineId } = useParams<{ pipelineId: string }>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
-  const location = useLocation(); // Access the location
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const { showSnackbar } = useSnackbar();
+  const [pipelineField, setPipelineField] = useState<PipelineField>();
+  const [pipelineTags, setPipelineTag] = useState<PipelineTag>();
   const [pipelineRunDetails, setPipelineRunDetails] = useState<RunDetails[]>(
     []
   );
-  const {
-    pipelineName,
-    pipelineTags,
-    scheduledPeriod,
-    scheduledStartTime,
-    scheduledEndTime,
-  } =
-    (location.state as {
-      // Destructure the passed state
-      pipelineName?: string;
-      pipelineTags?: PipelineTag; // Specify that pipelineTag is of type PipelineTag[]
-      scheduledPeriod?: string;
-      scheduledStartTime?: Date; // Change to Date
-      scheduledEndTime?: Date; // Change to Date
-    }) || {};
 
   // Ensure date objects are parsed correctly
-  const formattedScheduledStartTime = scheduledStartTime
-    ? new Date(scheduledStartTime).toLocaleString() // Format date as needed
+  const formattedScheduledStartTime = pipelineField?.scheduledStartTime
+    ? formattedDateTime(pipelineField.scheduledStartTime)
     : "-";
 
-  const formattedScheduledEndTime = scheduledEndTime
-    ? new Date(scheduledEndTime).toLocaleString() // Format date as needed
+  const formattedScheduledEndTime = pipelineField?.scheduledEndTime
+    ? formattedDateTime(pipelineField.scheduledEndTime)
     : "-";
 
   useEffect(() => {
@@ -76,6 +63,34 @@ const PipelineDetails = () => {
     };
 
     fetchPipelinesRunDetails();
+  }, [pipelineId]);
+
+  useEffect(() => {
+    const fetchPipelinesDetailById = async () => {
+      setLoading(true);
+      try {
+        const data = await pipelineService.getPipelineDescriptionById(
+          pipelineId ?? ""
+        );
+        const fields = data.fields;
+        const tags = data.tags;
+        setPipelineField(fields);
+        setPipelineTag(tags);
+        setLoading(false);
+        // console.log("fields ", fields);
+        // console.log("tags ", tags);
+
+        showSnackbar("Detail of Pipeline fetched successfully!", "success");
+      } catch (error) {
+        console.error("Failed to fetch Detail of Pipeline:", error);
+        showSnackbar("Failed to fetch Detail of Pipeline", "error");
+        setLoading(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPipelinesDetailById();
   }, [pipelineId]);
 
   // Transform data for DataGrid
@@ -312,7 +327,7 @@ const PipelineDetails = () => {
   }
   const paginationModel = { page: 0, pageSize: 10 };
   return (
-    <Box className="container container-xxl" mt="20px">
+    <Box className="container container-xxl">
       <Box
         display="flex"
         flexDirection="column"
@@ -343,7 +358,7 @@ const PipelineDetails = () => {
             </Typography>
           </Breadcrumbs>
         </Box>
-        <Header title={`Pipeline Instance Details of ${pipelineName}`} />
+        <Header title={`Pipeline Instance Details of ${pipelineField?.name}`} />
       </Box>
       <Box
         display="flex"
@@ -363,7 +378,7 @@ const PipelineDetails = () => {
                 </TableRow>
                 <TableRow>
                   <TableCell>Pipeline Name</TableCell>
-                  <TableCell>{pipelineName ?? "-"}</TableCell>
+                  <TableCell>{pipelineField?.name ?? "-"}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -403,7 +418,9 @@ const PipelineDetails = () => {
                   </TableRow>
                   <TableRow>
                     <TableCell>Period</TableCell>
-                    <TableCell>{scheduledPeriod ?? "-"}</TableCell>
+                    <TableCell>
+                      {pipelineField?.scheduledPeriod ?? "-"}
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -436,7 +453,7 @@ const PipelineDetails = () => {
           </Box>
         </Box>
       </Box>
-      <Box className="container">
+      <Box>
         <DataGridTable
           height={350}
           loading={loading}

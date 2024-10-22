@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, ReactNode, useRef } from "react";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
@@ -7,16 +7,17 @@ import "./Layout.scss";
 interface LayoutProps {
   children: ReactNode; // Specify the type for children prop
 }
+
 const Layout = ({ children }: LayoutProps) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); //false`
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement | null>(null); // Using ref instead of document.getElementById
+  const mainRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Initialize sidebar width and main content margin
-    const mySidebarElement = document.getElementById("my-sidebar-layout");
-    const mainElement = document.getElementById("main");
-    if (mySidebarElement && mainElement) {
-      mySidebarElement.style.width = isSidebarOpen ? "300px" : "72px";
-      mainElement.style.marginLeft = isSidebarOpen ? "300px" : "72px";
+    // Dynamically adjust the width and margin based on sidebar state
+    if (sidebarRef.current && mainRef.current) {
+      sidebarRef.current.style.width = isSidebarOpen ? "300px" : "72px";
+      mainRef.current.style.marginLeft = isSidebarOpen ? "300px" : "72px";
     }
   }, [isSidebarOpen]);
 
@@ -27,14 +28,15 @@ const Layout = ({ children }: LayoutProps) => {
       </Box>
       <Box className="content-layout">
         <Box
+          ref={sidebarRef}
           id="my-sidebar-layout"
           className="side-bar"
           onMouseEnter={() => setIsSidebarOpen(true)}
-          onMouseLeave={() => setIsSidebarOpen(false)} //true
+          onMouseLeave={() => setIsSidebarOpen(false)}
         >
           <Sidebar />
         </Box>
-        <Box id="main" className="main-content">
+        <Box ref={mainRef} id="main" className="main-content">
           {children}
         </Box>
       </Box>
