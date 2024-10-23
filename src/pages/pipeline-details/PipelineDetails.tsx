@@ -11,16 +11,27 @@ import {
   Typography,
 } from "@mui/material";
 import Header from "../../components/Header";
-import { GridColDef, GridColumnVisibilityModel } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import {
+  GridActionsCellItem,
+  GridColDef,
+  GridColumnVisibilityModel,
+  GridRowId,
+} from "@mui/x-data-grid";
+import { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
-import { PipelineField, RunDetails, PipelineTag } from "../../services/types";
+import {
+  PipelineField,
+  RunDetails,
+  PipelineTag,
+  PipelineActualDefinition,
+} from "../../services/types";
 import { useSnackbar } from "../../components/Snackbar";
 import "./PipelineDetails.scss";
 import DataGridTable from "../../components/DataGridTable";
 import SearchBox from "../../components/SearchBox";
 import { formattedDateTime } from "../../utility/utils";
+import ListAltRoundedIcon from "@mui/icons-material/ListAltRounded";
 
 const PipelineDetails = () => {
   const { pipelineId } = useParams<{ pipelineId: string }>();
@@ -134,6 +145,7 @@ const PipelineDetails = () => {
       status: true,
       actualStartTime: true,
       actualEndTime: true,
+      actions: true,
       // Set the rest of the columns to false (hidden)
       parent: false,
       triesLeft: false,
@@ -321,7 +333,116 @@ const PipelineDetails = () => {
       type: "string",
       hideable: true,
     },
+    {
+      field: "actions",
+      headerName: "Logs",
+      type: "actions",
+      width: 80,
+      hideable: false,
+      getActions: (params) => [
+        <GridActionsCellItem
+          className="actions-cell-item"
+          // sx={{ color: "var(--boston-blue)", fontWeight: 600 }}
+          icon={<ListAltRoundedIcon />}
+          label="Logs"
+          onClick={handleLogs({
+            id: params.id,
+            instanceName: params.row.name,
+            parent: params.row.parent,
+            headAttempt: params.row.headAttempt,
+          })}
+          // showInMenu
+        />,
+      ],
+    },
   ];
+
+  const handleLogs = useCallback(
+    ({
+        id,
+        instanceName,
+        parent,
+        headAttempt,
+      }: {
+        id: GridRowId;
+        instanceName: string;
+        parent: string;
+        headAttempt: string;
+      }) =>
+      async () => {
+        const logUri = await fetchPipelineLogUri();
+
+        if (!logUri) {
+          console.error("No pipelineLogUri found!");
+          showSnackbar("No bucketName Found in Definition!", "error");
+          return;
+        }
+        const bucketName = logUri.split("/")[2]; // Use logUri directly here
+        const prefix = `logs/${pipelineId}/${parent}/@${id}/@${headAttempt}/`;
+
+        await downloadLogs(bucketName, prefix, instanceName);
+      },
+    []
+  );
+
+  // Fetch the log URI from the pipeline actual definition
+  const fetchPipelineLogUri = async (): Promise<string | null> => {
+    try {
+      const data = await pipelineService.getPipelineActualDefinition(
+        pipelineId || ""
+      );
+
+      // Check if data contains 'objects' and cast it as an array of PipelineActualDefinition
+      const objects = (data as { objects?: PipelineActualDefinition[] })
+        .objects;
+
+      if (Array.isArray(objects)) {
+        // Use `find` to search the objects array for the object with id "Default"
+        const defaultObject = objects.find((obj: PipelineActualDefinition) => {
+          if (typeof obj === "object" && obj !== null) {
+            return obj.id === "Default";
+          }
+          return false;
+        });
+
+        // Access the pipelineLogUri if it exists in the found object
+        const logUri =
+          defaultObject && typeof defaultObject === "object"
+            ? (defaultObject as { [key: string]: string }).pipelineLogUri
+            : null;
+        return logUri;
+      }
+    } catch (error) {
+      console.error("Error fetching pipeline actual definition:", error);
+      showSnackbar("Error fetching pipeline actual definition", "error");
+    }
+    return null;
+  };
+  // Download the logs as a ZIP file
+  const downloadLogs = async (
+    bucketName: string,
+    prefix: string,
+    instanceName: string
+  ) => {
+    try {
+      const zipBlob = await pipelineService.downloadS3LogsZip(
+        bucketName,
+        prefix
+      );
+      const url = window.URL.createObjectURL(zipBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${instanceName}.zip`); // Set the filename for the download
+      document.body.appendChild(link);
+      link.click();
+      link.remove(); // Clean up after download
+      showSnackbar("Logs file downloaded successfully!", "success");
+    } catch (error) {
+      console.error("Error downloading the logs zip:", error);
+      showSnackbar("Failed to download logs", "error");
+    }
+  };
+
   function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
   }

@@ -94,6 +94,7 @@ export class PipelineService {
       throw error;
     }
   }
+
   async activateDataPipeline(pipelineId: string): Promise<boolean> {
     const url = `${this.serviceUrl}/${pipelineId}/activate`;
     try {
@@ -104,7 +105,6 @@ export class PipelineService {
       throw error;
     }
   }
-
   async deactivateDataPipeline(pipelineId: string): Promise<boolean> {
     const url = `${this.serviceUrl}/${pipelineId}/deactivate`;
     try {
@@ -112,6 +112,28 @@ export class PipelineService {
       return true;
     } catch (error) {
       console.error(`Error in deactivating pipeline Id ${pipelineId}:`, error);
+      throw error;
+    }
+  }
+
+  async downloadS3LogsZip(bucketName: string, prefix?: string): Promise<Blob> {
+    const url = `http://localhost:3000/s3logs/get-all-logs`;
+
+    try {
+      const response = await axios.get(url, {
+        params: {
+          bucketName,
+          prefix,
+        },
+        responseType: "blob", // Set response type to blob for binary data
+      });
+      // Return the binary data (zip file) as a Blob
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Error fetching logs as zip for bucket ${bucketName}:`,
+        error
+      );
       throw error;
     }
   }

@@ -84,7 +84,7 @@ export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({ children }
             {snackbar.message}
           </Alert>
         </Snackbar>
-      )).reverse()} // Reverse to show the latest at the bottom
+      )).reverse()}
     </SnackbarContext.Provider>
   );
 };

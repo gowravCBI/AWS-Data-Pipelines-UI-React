@@ -310,7 +310,7 @@ const PipelineList = () => {
           className="actions-cell-item"
           icon={<StopRoundedIcon />}
           label="Stop"
-          onClick={handleStop(params.id)}
+          onClick={handleStop(params.id,)}
           showInMenu
         />,
         <GridActionsCellItem
