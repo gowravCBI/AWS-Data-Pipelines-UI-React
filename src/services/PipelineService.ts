@@ -5,6 +5,7 @@ import {
   PipelineDescription,
   PipelineActualDefinition,
   RunDetails,
+  CreatePipelineDto,
 } from "./types";
 import { parseDatesInObject } from "../utility/utils"; // Import the utility function
 
@@ -134,6 +135,19 @@ export class PipelineService {
         `Error fetching logs as zip for bucket ${bucketName}:`,
         error
       );
+      throw error;
+    }
+  }
+
+  async createPipeline(createPipelineDto: CreatePipelineDto): Promise<void> {
+    const url = `${this.serviceUrl}/create`;
+    try {
+      const response = await axios.post(url, createPipelineDto);
+      console.log("-=-=-=-=-=-=-1=2-2=1-2-", createPipelineDto);
+
+      console.log("Pipeline created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating pipeline:", error);
       throw error;
     }
   }

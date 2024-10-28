@@ -7,11 +7,13 @@ import {
   GridRowId,
 } from "@mui/x-data-grid";
 import "./PipelineList.scss";
-import { Breadcrumbs, Typography } from "@mui/material";
+import { Breadcrumbs, Button, Stack, Typography } from "@mui/material";
 import Link from "@mui/material/Link";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import AccountTreeRounded from "@mui/icons-material/AccountTreeRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+// import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
@@ -20,12 +22,14 @@ import { PipelineActualDefinition } from "../pipeline-actual-definition/Pipeline
 import { useSnackbar } from "../../components/Snackbar";
 import DataGridTable from "../../components/DataGridTable";
 import SearchBox from "../../components/SearchBox";
+import { PipelineCreation } from "../pipeline-creation/PipelineCreation";
 
 const PipelineList = () => {
   const [pipelines, setPipelines] = useState<PipelineDescription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [openDefinitionDialog, setOpenDefinitionDialog] =
     useState<boolean>(false);
+  const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
   const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null
   );
@@ -121,9 +125,6 @@ const PipelineList = () => {
         <RouterLink
           to={`/pipeline/details/${params.value}`}
           className="pipeline-id-link"
-          // state={{
-          //   pipelineId: params.row.id,
-          // }}
         >
           {params.value}
         </RouterLink>
@@ -133,7 +134,7 @@ const PipelineList = () => {
       field: "name",
       headerName: "Pipeline Name",
       type: "string",
-      width: 250,
+      width: 230,
       align: "center",
       headerAlign: "center",
       hideable: true,
@@ -223,7 +224,7 @@ const PipelineList = () => {
       field: "healthStatus",
       headerName: "Health Status",
       type: "string",
-      width: 140,
+      width: 150,
       align: "center",
       headerAlign: "center",
       hideable: true,
@@ -295,7 +296,7 @@ const PipelineList = () => {
       field: "actions",
       headerName: "Actions",
       type: "actions",
-      width: 80,
+      width: 70,
       hideable: false,
       getActions: (params) => [
         <GridActionsCellItem
@@ -310,7 +311,7 @@ const PipelineList = () => {
           className="actions-cell-item"
           icon={<StopRoundedIcon />}
           label="Stop"
-          onClick={handleStop(params.id,)}
+          onClick={handleStop(params.id)}
           showInMenu
         />,
         <GridActionsCellItem
@@ -373,6 +374,9 @@ const PipelineList = () => {
     []
   );
 
+  const handleOpenCreatePipeline = () => {
+    setOpenCreationDialog(true);
+  };
   function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
   }
@@ -381,38 +385,45 @@ const PipelineList = () => {
     <Box className="container container-xxl">
       <Box
         display="flex"
-        justifyContent="space-between"
-        alignItems="flex-end"
-        sx={{ marginBottom: "20px", paddingRight: "30px" }}
-        className="container header-search-container"
+        flexDirection="column"
+        className=" container header-breadcrumbs-container"
       >
-        <Box
-          display="flex"
-          flexDirection="column"
-          sx={{ marginBottom: "20px" }}
-          className="header-breadcrumbs-container"
-        >
-          <Box role="presentation" onClick={handleClick}>
-            <Breadcrumbs aria-label="breadcrumb">
-              <Link
-                underline="hover"
-                color="var(--boston-blue)"
-                to="/"
-                component={RouterLink}
-              >
-                Home
-              </Link>
-              <Typography
-                sx={{ color: "var(--boston-blue)", fontWeight: "600" }}
-              >
-                PipelineList
-              </Typography>
-            </Breadcrumbs>
-          </Box>
-          <Header title="Pipeline List" />
+        <Box role="presentation" onClick={handleClick}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              underline="hover"
+              color="var(--boston-blue)"
+              to="/"
+              component={RouterLink}
+            >
+              Home
+            </Link>
+            <Typography sx={{ color: "var(--boston-blue)", fontWeight: "600" }}>
+              PipelineList
+            </Typography>
+          </Breadcrumbs>
         </Box>
-        <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <Header title="Pipeline List" />
       </Box>
+      <Stack
+        className="operation-search-container"
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        justifyContent="flex-end"
+        sx={{ marginBottom: "20px", marginRight: "30px" }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddRoundedIcon />}
+          size="small"
+          onClick={handleOpenCreatePipeline}
+        >
+          Create
+        </Button>
+        <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      </Stack>
       <Box className="container pipeline-list-container">
         <DataGridTable
           height={500}
@@ -430,6 +441,11 @@ const PipelineList = () => {
             pipelineId={selectedPipelineId}
             onClose={() => setOpenDefinitionDialog(false)}
           />
+        )}
+
+        {/* Conditionally render the PipelineActualDefinitionComponent dialog */}
+        {openCreationDialog && (
+          <PipelineCreation onClose={() => setOpenCreationDialog(false)} />
         )}
       </Box>
     </Box>

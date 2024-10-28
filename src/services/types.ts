@@ -68,3 +68,15 @@ export type PipelineActualDefinition =
   | {
       [key: string]: string | number | boolean | PipelineActualDefinition; // Recursive for sub-objects
     };
+
+export interface TagDto {
+  key: string;
+  value: string;
+}
+
+export interface CreatePipelineDto {
+  name: string;
+  uniqueId: string;
+  description?: string;
+  tags: TagDto[];
+}

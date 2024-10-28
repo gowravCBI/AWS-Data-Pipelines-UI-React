@@ -1,0 +1,22 @@
+.header-view {
+    padding: 20px;
+    background-color: var(--boston-blue);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    color: white;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-view {
+    display: flex;
+    flex-direction: column; // Ensure the form elements stack vertically
+    justify-content: center;
+    align-items: stretch; // Align items to take up full width   
+    width: 100%; // Ensure it takes up the full width of the container
+    padding: 20px 30px;
+    box-sizing: border-box;
+    background-color: whitesmoke;
+}

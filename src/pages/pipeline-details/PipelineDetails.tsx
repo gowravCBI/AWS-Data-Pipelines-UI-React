@@ -165,7 +165,7 @@ const PipelineDetails = () => {
     {
       field: "id",
       headerName: "ID",
-      width: 290,
+      width: 250,
       align: "center",
       headerAlign: "center",
       type: "string",
@@ -174,7 +174,7 @@ const PipelineDetails = () => {
     {
       field: "name",
       headerName: "Name",
-      width: 280,
+      width: 250,
       align: "center",
       headerAlign: "center",
       type: "string",
@@ -265,7 +265,7 @@ const PipelineDetails = () => {
       field: "scheduledStartTime",
       headerName: "Scheduled Start Time",
       type: "dateTime",
-      width: 190,
+      width: 200,
       align: "center",
       headerAlign: "center",
       hideable: true,
@@ -337,7 +337,7 @@ const PipelineDetails = () => {
       field: "actions",
       headerName: "Logs",
       type: "actions",
-      width: 80,
+      width: 60,
       hideable: false,
       getActions: (params) => [
         <GridActionsCellItem
@@ -485,8 +485,8 @@ const PipelineDetails = () => {
         display="flex"
         justifyContent="space-between"
         alignItems="flex-start"
-        sx={{ marginBottom: "20px" }}
-        className="details-search-container container"
+        sx={{ marginBottom: "10px" }}
+        className="details-container container"
       >
         <Box className="details-table">
           <TableContainer>
@@ -505,19 +505,24 @@ const PipelineDetails = () => {
             </Table>
           </TableContainer>
         </Box>
-        <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        {/* <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> */}
       </Box>
-      <Box className="container">
+      <Box
+        className="container"
+        display="flex"
+        alignItems="flex-end"
+        sx={{ marginBottom: "20px" }}
+      >
         <Box
-          className="schedule-info-tags-container container"
+          className="schedule-info-tags-search-container container"
           display="flex"
           alignItems="flex-start"
           sx={{
-            marginBottom: "20px",
             width: "fit-content",
-            borderRadius: "10px",
-            boxShadow: "2",
+            borderRadius: "5px",
+            boxShadow: "1",
             marginLeft: "0px",
+            paddingBottom: "4px",
           }}
         >
           <Box className="schedule-info-table">
@@ -573,6 +578,7 @@ const PipelineDetails = () => {
             </TableContainer>
           </Box>
         </Box>
+        <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </Box>
       <Box>
         <DataGridTable

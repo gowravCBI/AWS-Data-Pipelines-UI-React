@@ -26,9 +26,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         value={searchQuery} // Bind the value to state
         onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
         sx={{
+          height: "30px", // Match button height
           backgroundColor: "whitesmoke",
           border: "none",
           "& .MuiOutlinedInput-root": {
+            height: "100%",
             "& fieldset": {
               border: "none",
             },

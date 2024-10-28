@@ -38,3 +38,12 @@ export function formattedDateTime(dateTime: string): string {
 
   return date.toLocaleString(); // Format date as needed
 }
+
+// Format Date to DDMMYYYY
+export const formatDate = () => {
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const year = date.getFullYear();
+  return `${day}${month}${year}`;
+};
