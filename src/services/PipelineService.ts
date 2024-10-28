@@ -151,6 +151,18 @@ export class PipelineService {
       throw error;
     }
   }
+
+  async deletePipeline(pipelineId: string): Promise<String> {
+    // console.log("Service PipelineId :: ", pipelineId);
+    const url = `${this.serviceUrl}/${pipelineId}`;
+    try {
+      const response = await axios.delete(url);
+      return response.data;
+    } catch (error) {
+      console.error(`Error in deleting Pipeline with id : ${pipelineId}`, error);
+      throw error;
+    }
+  }
 }
 
 export const pipelineService = new PipelineService();
