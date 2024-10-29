@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Dialog,
@@ -19,6 +19,7 @@ import { useSnackbar } from "../../components/Snackbar";
 import "./PipelineCreation.scss";
 import { CreatePipelineDto } from "../../services/types";
 import { formatDate } from "../../utility/utils";
+import { useNavigate } from "react-router-dom";
 
 // Define the props to accept data via the dialog
 interface PipelineCreationProps {
@@ -31,6 +32,7 @@ export const PipelineCreation: React.FC<PipelineCreationProps> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -124,7 +126,6 @@ export const PipelineCreation: React.FC<PipelineCreationProps> = ({
         .map((tag) => ({ key: tag.key, value: tag.value })),
     };
 
-    // showSnackbar("Pipeline Created successfully!", "success");
     try {
       await pipelineService.createPipeline(createPipelineDto);
       showSnackbar("Pipeline created successfully!", "success");
@@ -134,142 +135,136 @@ export const PipelineCreation: React.FC<PipelineCreationProps> = ({
       console.error("Error creating pipeline:", error);
     } finally {
       setLoading(false);
+      navigate(0); // This will refresh the current route
     }
   };
 
   return (
-    <Fragment>
-      <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
-        <Box className="header-view">
-          <DialogTitle variant="h3" sx={{ fontWeight: "bold" }}>
-            Create Pipeline
-          </DialogTitle>
-          <DialogActions>
-            <Tooltip title="Close">
-              <IconButton onClick={onClose}>
-                <CloseRoundedIcon sx={{ color: "var(--white)" }} />
-              </IconButton>
-            </Tooltip>
-          </DialogActions>
+    <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
+      <Box className="header-view">
+        <DialogTitle variant="h3" sx={{ fontWeight: "bold" }}>
+          Create Pipeline
+        </DialogTitle>
+        <DialogActions>
+          <Tooltip title="Close">
+            <IconButton onClick={onClose}>
+              <CloseRoundedIcon sx={{ color: "var(--white)" }} />
+            </IconButton>
+          </Tooltip>
+        </DialogActions>
+      </Box>
+
+      <DialogContent dividers sx={{ padding: 0 }}>
+        <Box className="content-view">
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={4} sx={{ marginBottom: "20px" }}>
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  id="name"
+                  name="name"
+                  label="Pipeline Name"
+                  variant="outlined"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  size="small"
+                />
+              </FormControl>
+
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  id="description"
+                  name="description"
+                  label="Description"
+                  variant="outlined"
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  size="small"
+                />
+              </FormControl>
+
+              {/* Dynamically render tag rows */}
+              {formData.tags.map((tag, index) => (
+                <Stack direction="row" spacing={2} className="tags" key={index}>
+                  {/* Tag Key Field */}
+                  <FormControl fullWidth margin="normal">
+                    <TextField
+                      id={`key-${index}`}
+                      name="key"
+                      label={`Tag ${index + 1}`}
+                      variant="outlined"
+                      value={tag.key}
+                      onChange={(e) =>
+                        handleTagChange(
+                          index,
+                          e as React.ChangeEvent<HTMLInputElement>
+                        )
+                      }
+                      error={tag.error} // Show error state
+                      helperText={
+                        tag.error ? "Key is required if Value is filled!" : ""
+                      }
+                      fullWidth
+                      size="small"
+                    />
+                  </FormControl>
+
+                  {/* Tag Value Field */}
+                  <FormControl fullWidth margin="normal">
+                    <TextField
+                      id={`value-${index}`}
+                      name="value"
+                      label={`Value ${index + 1}`}
+                      variant="outlined"
+                      value={tag.value}
+                      onChange={(e) =>
+                        handleTagChange(
+                          index,
+                          e as React.ChangeEvent<HTMLInputElement>
+                        )
+                      }
+                      error={tag.error} // Show error state
+                      helperText={
+                        tag.error ? "Value is required if Key is filled!" : ""
+                      }
+                      fullWidth
+                      size="small"
+                    />
+                  </FormControl>
+
+                  {/* IconButton to remove the current tag row */}
+                  <Box className="remove" alignContent="center">
+                    <Tooltip title="Remove">
+                      <IconButton onClick={() => removeTag(index)}>
+                        <RemoveCircleOutlineIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Stack>
+              ))}
+            </Stack>
+
+            <Stack direction="row" spacing={2} justifyContent="space-evenly">
+              {/* Button to toggle additional fields */}
+              <Button variant="outlined" onClick={addTag}>
+                Add Tags
+              </Button>
+
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={loading || formHasError}
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </Button>
+            </Stack>
+          </form>
         </Box>
-
-        <DialogContent dividers sx={{ padding: 0 }}>
-          <Box className="content-view">
-            <form onSubmit={handleSubmit}>
-              <Stack spacing={2} sx={{ marginBottom: "20px" }}>
-                <FormControl fullWidth margin="normal">
-                  <TextField
-                    id="name"
-                    name="name"
-                    label="Pipeline Name"
-                    variant="outlined"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    size="small"
-                  />
-                </FormControl>
-
-                <FormControl fullWidth margin="normal">
-                  <TextField
-                    id="description"
-                    name="description"
-                    label="Description"
-                    variant="outlined"
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    size="small"
-                  />
-                </FormControl>
-
-                {/* Dynamically render tag rows */}
-                {formData.tags.map((tag, index) => (
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    className="tags"
-                    key={index}
-                  >
-                    {/* Tag Key Field */}
-                    <FormControl fullWidth margin="normal">
-                      <TextField
-                        id={`key-${index}`}
-                        name="key"
-                        label={`Tag ${index + 1}`}
-                        variant="outlined"
-                        value={tag.key}
-                        onChange={(e) =>
-                          handleTagChange(
-                            index,
-                            e as React.ChangeEvent<HTMLInputElement>
-                          )
-                        }
-                        error={tag.error} // Show error state
-                        helperText={
-                          tag.error ? "Key is required if Value is filled!" : ""
-                        }
-                        fullWidth
-                        size="small"
-                      />
-                    </FormControl>
-
-                    {/* Tag Value Field */}
-                    <FormControl fullWidth margin="normal">
-                      <TextField
-                        id={`value-${index}`}
-                        name="value"
-                        label={`Value ${index + 1}`}
-                        variant="outlined"
-                        value={tag.value}
-                        onChange={(e) =>
-                          handleTagChange(
-                            index,
-                            e as React.ChangeEvent<HTMLInputElement>
-                          )
-                        }
-                        error={tag.error} // Show error state
-                        helperText={
-                          tag.error ? "Value is required if Key is filled!" : ""
-                        }
-                        fullWidth
-                        size="small"
-                      />
-                    </FormControl>
-
-                    {/* IconButton to remove the current tag row */}
-                    <Box className="remove" alignContent="center">
-                      <Tooltip title="Remove">
-                        <IconButton onClick={() => removeTag(index)}>
-                          <RemoveCircleOutlineIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </Stack>
-                ))}
-              </Stack>
-
-              <Stack direction="row" spacing={2} justifyContent="space-evenly">
-                {/* Button to toggle additional fields */}
-                <Button variant="outlined" onClick={addTag}>
-                  Add Tags
-                </Button>
-
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading || formHasError}
-                >
-                  {loading ? "Submitting..." : "Submit"}
-                </Button>
-              </Stack>
-            </form>
-          </Box>
-        </DialogContent>
-      </Dialog>
-    </Fragment>
+      </DialogContent>
+    </Dialog>
   );
 };

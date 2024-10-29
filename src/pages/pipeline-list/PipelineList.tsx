@@ -14,9 +14,8 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import AccountTreeRounded from "@mui/icons-material/AccountTreeRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-// import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useCallback, useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { pipelineService } from "../../services/PipelineService";
 import { PipelineDescription } from "../../services/types";
 import { PipelineActualDefinition } from "../pipeline-actual-definition/PipelineActualDefinition";
@@ -36,6 +35,7 @@ const PipelineList = () => {
   );
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPipelines = async () => {
@@ -302,7 +302,6 @@ const PipelineList = () => {
       getActions: (params) => [
         <GridActionsCellItem
           className="actions-cell-item"
-          // sx={{ color: "var(--boston-blue)", fontWeight: 600 }}
           icon={<PlayArrowRoundedIcon />}
           label="Run"
           onClick={handleRun(params.id)}
@@ -347,6 +346,7 @@ const PipelineList = () => {
           showSnackbar("Failed to Activate Pipeline ", "error");
         } finally {
           setLoading(false);
+          navigate(0); // This will refresh the current route
         }
       };
       activatePipelines(id as string);
@@ -368,6 +368,7 @@ const PipelineList = () => {
           showSnackbar("Failed to Deactivate Pipeline ", "error");
         } finally {
           setLoading(false);
+          navigate(0); // This will refresh the current route
         }
       };
       deactivatePipelines(id as string);
@@ -391,9 +392,11 @@ const PipelineList = () => {
           const response = await pipelineService.deletePipeline(id);
           showSnackbar(String(response), "success");
         } catch (error) {
-          showSnackbar(`Failed to delete pipeline with ID: ${id}.`, "error");
+          console.error("Failed to Delete Pipeline :", error);
+          showSnackbar(`Failed to Delete pipeline with ID: ${id}.`, "error");
         } finally {
           setLoading(false);
+          navigate(0); // This will refresh the current route
         }
       };
       deleteDataPipeline(id as string);

@@ -143,7 +143,7 @@ export class PipelineService {
     const url = `${this.serviceUrl}/create`;
     try {
       const response = await axios.post(url, createPipelineDto);
-      console.log("-=-=-=-=-=-=-1=2-2=1-2-", createPipelineDto);
+      // console.log("-=-=-=-=-=-=-1=2-2=1-2-", createPipelineDto);
 
       console.log("Pipeline created successfully:", response.data);
     } catch (error) {
@@ -152,14 +152,17 @@ export class PipelineService {
     }
   }
 
-  async deletePipeline(pipelineId: string): Promise<String> {
-    // console.log("Service PipelineId :: ", pipelineId);
+  async deletePipeline(pipelineId: string): Promise<string> {
     const url = `${this.serviceUrl}/${pipelineId}`;
     try {
+      // console.log("Service PipelineId :: ", pipelineId);
       const response = await axios.delete(url);
       return response.data;
     } catch (error) {
-      console.error(`Error in deleting Pipeline with id : ${pipelineId}`, error);
+      console.error(
+        `Error in deleting Pipeline with id : ${pipelineId}`,
+        error
+      );
       throw error;
     }
   }
