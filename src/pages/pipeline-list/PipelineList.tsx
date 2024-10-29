@@ -4,6 +4,7 @@ import {
   GridActionsCellItem,
   GridColDef,
   GridColumnVisibilityModel,
+  GridDeleteIcon,
   GridRowId,
 } from "@mui/x-data-grid";
 import "./PipelineList.scss";
@@ -321,6 +322,13 @@ const PipelineList = () => {
           onClick={handleOpenActualDefinition(params.id)}
           showInMenu
         />,
+        <GridActionsCellItem
+          className="actions-cell-item"
+          icon={<GridDeleteIcon />}
+          label="Delete"
+          onClick={handleDeletePipeline(params.id)}
+          showInMenu
+        />,
       ],
     },
   ];
@@ -370,6 +378,25 @@ const PipelineList = () => {
     (id: GridRowId) => () => {
       setSelectedPipelineId(String(id));
       setOpenDefinitionDialog(true);
+    },
+    []
+  );
+
+  const handleDeletePipeline = useCallback(
+    (id: GridRowId) => () => {
+      setLoading(true); // Set loading state to true when starting the pipeline activation
+      // console.log("PipelineId :: ", id);
+      const deleteDataPipeline = async (id: string) => {
+        try {
+          const response = await pipelineService.deletePipeline(id);
+          showSnackbar(String(response), "success");
+        } catch (error) {
+          showSnackbar(`Failed to delete pipeline with ID: ${id}.`, "error");
+        } finally {
+          setLoading(false);
+        }
+      };
+      deleteDataPipeline(id as string);
     },
     []
   );
