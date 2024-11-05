@@ -1,0 +1,25 @@
+.view-put-header {
+    padding: 20px;
+    background-color: var(--boston-blue);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    color: white;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.view-put-content {
+    // padding: 20px;
+    // font-size: 12px;
+    // font-weight: 500;
+}
+
+.view-put-dialog {
+    // background-color: whitesmoke;
+    // color: var(--white-smoke);
+    padding: 0px;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}

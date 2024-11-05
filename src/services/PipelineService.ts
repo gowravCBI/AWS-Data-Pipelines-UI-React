@@ -145,7 +145,7 @@ export class PipelineService {
       const response = await axios.post(url, createPipelineDto);
       // console.log("-=-=-=-=-=-=-1=2-2=1-2-", createPipelineDto);
 
-      console.log("Pipeline created successfully:", response.data);
+      // console.log("Pipeline created successfully:", response.data);
     } catch (error) {
       console.error("Error creating pipeline:", error);
       throw error;
@@ -163,6 +163,18 @@ export class PipelineService {
         `Error in deleting Pipeline with id : ${pipelineId}`,
         error
       );
+      throw error;
+    }
+  }
+  async putPipelineDefinition(pipelineId: string, definition: any): Promise<void> {
+    const url = `${this.serviceUrl}/${pipelineId}/definition`;
+    try {
+      // console.log("service put --- ", pipelineId, "----- ", definition);
+      const response = await axios.post(url, definition);
+      // console.log("Pipeline Definition added successfully:", response.data);
+
+    } catch (error) {
+      console.error(`Error in updating pipeline definition for ID ${pipelineId}:`, error);
       throw error;
     }
   }

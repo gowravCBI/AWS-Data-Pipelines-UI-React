@@ -12,6 +12,7 @@ import { Breadcrumbs, Button, Stack, Typography } from "@mui/material";
 import Link from "@mui/material/Link";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
+import PolylineRoundedIcon from "@mui/icons-material/PolylineRounded";
 import AccountTreeRounded from "@mui/icons-material/AccountTreeRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { useCallback, useEffect, useState } from "react";
@@ -23,6 +24,7 @@ import { useSnackbar } from "../../components/Snackbar";
 import DataGridTable from "../../components/DataGridTable";
 import SearchBox from "../../components/SearchBox";
 import { PipelineCreation } from "../pipeline-creation/PipelineCreation";
+import { PipelinePutDefinition } from "../pipeline-put-definition/PipelinePutDefinition";
 
 const PipelineList = () => {
   const [pipelines, setPipelines] = useState<PipelineDescription[]>([]);
@@ -30,6 +32,8 @@ const PipelineList = () => {
   const [openDefinitionDialog, setOpenDefinitionDialog] =
     useState<boolean>(false);
   const [openCreationDialog, setOpenCreationDialog] = useState<boolean>(false);
+  const [openPutDefinitionDialog, setOpenPutDefinitionDialog] =
+    useState<boolean>(false);
   const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null
   );
@@ -316,6 +320,13 @@ const PipelineList = () => {
         />,
         <GridActionsCellItem
           className="actions-cell-item"
+          icon={<PolylineRoundedIcon />}
+          label="Put Definition"
+          onClick={handleOpenPutDefinition(params.id)}
+          showInMenu
+        />,
+        <GridActionsCellItem
+          className="actions-cell-item"
           icon={<AccountTreeRounded />}
           label="Actual Definition"
           onClick={handleOpenActualDefinition(params.id)}
@@ -372,6 +383,14 @@ const PipelineList = () => {
         }
       };
       deactivatePipelines(id as string);
+    },
+    []
+  );
+  const handleOpenPutDefinition = useCallback(
+    (id: GridRowId) => () => {
+      // console.log("put -----", id);
+      setSelectedPipelineId(String(id));
+      setOpenPutDefinitionDialog(true);
     },
     []
   );
@@ -470,6 +489,13 @@ const PipelineList = () => {
           <PipelineActualDefinition
             pipelineId={selectedPipelineId}
             onClose={() => setOpenDefinitionDialog(false)}
+          />
+        )}
+        {/* Conditionally render the PipelinePutDefinitionComponent dialog */}
+        {openPutDefinitionDialog && selectedPipelineId && (
+          <PipelinePutDefinition
+            pipelineId={selectedPipelineId}
+            onClose={() => setOpenPutDefinitionDialog(false)}
           />
         )}
 
