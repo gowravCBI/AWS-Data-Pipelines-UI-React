@@ -8,6 +8,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .MuiTypography-root {
+        font-size: 1.5rem; // Default size for larger screens
+
+        @media (max-width: 600px) {
+            font-size: 1.2rem; // Adjust font size on smaller screens
+            padding: 0rem;
+        }
+    }
+
+    // Make it responsive
+    @media (max-width: 600px) {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        text-align: center;
+    }
 }
 
 .content-view {
@@ -19,4 +36,28 @@
     padding: 20px 30px;
     box-sizing: border-box;
     background-color: whitesmoke;
+
+    // Make content responsive
+    @media (max-width: 600px) {
+        padding: 15px 20px;
+    }
+
+    .tags {
+        gap: 1rem;
+
+        @media (max-width: 600px) {
+            display: flex;
+            flex-direction: column; // Stack tags vertically on smaller screens
+            gap: 0px;
+            align-items: stretch;
+        }
+    }
+
+    button {
+        width: auto; // Adjust button width to be more compact for small screens
+
+        @media (max-width: 600px) {
+            width: 100%; // Make buttons take full width on small screens
+        }
+    }
 }

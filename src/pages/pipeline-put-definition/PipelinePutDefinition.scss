@@ -8,18 +8,42 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
 
-.view-put-content {
-    // padding: 20px;
-    // font-size: 12px;
-    // font-weight: 500;
+    .MuiTypography-root {
+        font-size: 1.5rem; // Default size for larger screens
+
+        @media (max-width: 600px) {
+            font-size: 1.2rem; // Adjust font size on smaller screens
+            padding: 0.5rem;
+        }
+    }
+
+    // Adjustments for smaller screens
+    @media (max-width: 600px) {
+        height: auto;
+        padding: 10px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .MuiIconButton-root {
+        padding: 0.5rem;
+
+        @media (max-width: 600px) {
+            padding: 0.3rem;
+        }
+    }
 }
 
 .view-put-dialog {
-    // background-color: whitesmoke;
-    // color: var(--white-smoke);
     padding: 0px;
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
+
+    // Make sure the dialog adjusts its width and height based on screen size
+    @media (max-width: 600px) {
+        width: 100% !important;
+        height: auto !important;
+        padding: 10px;
+    }
 }

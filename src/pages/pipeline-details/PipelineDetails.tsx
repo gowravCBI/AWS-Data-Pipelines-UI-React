@@ -392,24 +392,15 @@ const PipelineDetails = () => {
         pipelineId || ""
       );
 
-      // Check if data contains 'objects' and cast it as an array of PipelineActualDefinition
-      const objects = (data as { objects?: PipelineActualDefinition[] })
-        .objects;
+      // Check if data contains 'objects' and ensure it's an array of objects
+      const objects = data.objects;
 
       if (Array.isArray(objects)) {
-        // Use `find` to search the objects array for the object with id "Default"
-        const defaultObject = objects.find((obj: PipelineActualDefinition) => {
-          if (typeof obj === "object" && obj !== null) {
-            return obj.id === "Default";
-          }
-          return false;
-        });
+        // Search the objects array for the object with id "Default"
+        const defaultObject = objects.find((obj: any) => obj?.id === "Default");
 
         // Access the pipelineLogUri if it exists in the found object
-        const logUri =
-          defaultObject && typeof defaultObject === "object"
-            ? (defaultObject as { [key: string]: string }).pipelineLogUri
-            : null;
+        const logUri = defaultObject ? defaultObject.pipelineLogUri : null;
         return logUri;
       }
     } catch (error) {
@@ -418,6 +409,7 @@ const PipelineDetails = () => {
     }
     return null;
   };
+
   // Download the logs as a ZIP file
   const downloadLogs = async (
     bucketName: string,
@@ -505,7 +497,6 @@ const PipelineDetails = () => {
             </Table>
           </TableContainer>
         </Box>
-        {/* <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> */}
       </Box>
       <Box
         className="container"

@@ -7,7 +7,6 @@ import {
   Tooltip,
   CircularProgress,
   DialogTitle,
-  DialogActions,
   Typography,
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -20,12 +19,14 @@ import JsonEditor from "../../components/JsonEditor";
 // Define the props to accept data via the dialog
 interface PipelinePutDefinitionProps {
   pipelineId: string;
+  pipelineName: string | null;
   onClose: () => void;
 }
 
 // Main component
 export const PipelinePutDefinition: React.FC<PipelinePutDefinitionProps> = ({
   pipelineId,
+  pipelineName,
   onClose,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,71 +48,73 @@ export const PipelinePutDefinition: React.FC<PipelinePutDefinitionProps> = ({
   };
 
   return (
-    <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={true}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      className="view-put-dialog"
+    >
       <Box className="view-put-header">
-        <DialogTitle variant="h3" sx={{ fontWeight: "bold" }}>
-          Put Definition
+        <DialogTitle
+          variant="h3"
+          sx={{ fontWeight: "bold", fontSize: { xs: "1.5rem", sm: "1.75rem" } }}
+        >
+          Put Definition - {pipelineName}
         </DialogTitle>
-        <DialogActions>
-          <Box display="flex" justifyContent="space-around" gap={1}>
-            <Tooltip
-              title={
-                <React.Fragment>
-                  <Typography
-                    variant="h6"
-                    sx={{ fontSize: "0.8rem", fontWeight: "bold" }}
-                  >
-                    Definition Json Rules:
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{ fontSize: "0.7rem", lineHeight: 1.3 }}
-                  >
-                    1. The JSON must only include the following keys:
-                    <br />- <strong>'objects'</strong>
-                    <br />- <strong>'parameters'</strong>
-                    <br />- <strong>'values'</strong>
-                    <br />
-                    No other keys are allowed, and the names must match exactly.
-                    <br />
-                    2. The <strong>'objects'</strong> key must contain:
-                    <br />
-                    - A non-empty array.
-                    <br />- Each item in the array must have both{" "}
-                    <strong>'id'</strong> and <strong>'name'</strong> keys.
-                    <br />
-                    3. The <strong>'parameters'</strong> key is optional:
-                    <br />
-                    - It can be empty.
-                    <br />
-                    - If present, it must be an array.
-                    <br />- Each item in the array must have an{" "}
-                    <strong>'id'</strong> key.
-                    <br />
-                    4. The <strong>'values'</strong> key is also optional:
-                    <br />
-                    - It can be empty.
-                    <br />- If present, it must be an object (not an array).
-                  </Typography>
-                </React.Fragment>
-              }
-              arrow
-            >
-              <IconButton>
-                <InfoRoundedIcon sx={{ color: "var(--white)" }} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Close">
-              <IconButton onClick={onClose}>
-                <CloseRoundedIcon sx={{ color: "var(--white)" }} />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </DialogActions>
+        <Box display="flex" justifyContent="space-around" gap={1}>
+          <Tooltip
+            title={
+              <React.Fragment>
+                {/* Tooltip Header */}
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: "0.8rem", fontWeight: "bold" }}
+                >
+                  Definition JSON Rules:
+                </Typography>
+
+                {/* Tooltip Body */}
+                <Typography
+                  variant="body1"
+                  sx={{ fontSize: "0.8rem", lineHeight: 1.5 }}
+                >
+                  The JSON must only include the following keys:
+                  <br />
+                  <strong>1. 'objects' key must contain:</strong>
+                  <br />
+                  - A non-empty array.
+                  <br />- Each item in the array must have both
+                  <strong>'id'</strong> and <strong>'name'</strong> keys.
+                  <br />
+                  <strong>2. 'parameters' key (optional):</strong>
+                  <br />
+                  - If present, it must be an array.
+                  <br />- Each item in the array must have an
+                  <strong>'id'</strong> key.
+                  <br />
+                  <strong>3. 'values' key (optional):</strong>
+                  <br />- If present, it must be an object (not an array).
+                </Typography>
+              </React.Fragment>
+            }
+            arrow
+          >
+            <IconButton>
+              <InfoRoundedIcon sx={{ color: "var(--white)" }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Close">
+            <IconButton onClick={onClose}>
+              <CloseRoundedIcon sx={{ color: "var(--white)" }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       <DialogContent dividers className="view-put-dialog">
-        <Box className="view-put-content">
+        <Box>
           {loading ? (
             <Box
               display="flex"
@@ -123,7 +126,7 @@ export const PipelinePutDefinition: React.FC<PipelinePutDefinitionProps> = ({
             </Box>
           ) : (
             <Box>
-              <JsonEditor onSubmit={handleSubmit} />
+              <JsonEditor onSubmit={handleSubmit} pipelineId={pipelineId} />
             </Box>
           )}
         </Box>

@@ -63,11 +63,13 @@ export interface RunDetails {
   componentParent: string;
 }
 
-export type PipelineActualDefinition =
-  | string
-  | {
-      [key: string]: string | number | boolean | PipelineActualDefinition; // Recursive for sub-objects
-    };
+export type PipelineActualDefinition = {
+  $metadata?: any;
+  objects?: any;
+  parameterObj?: any;
+  parameterValues?: any;
+};
+
 
 export interface TagDto {
   key: string;

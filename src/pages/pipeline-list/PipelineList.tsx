@@ -37,6 +37,9 @@ const PipelineList = () => {
   const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null
   );
+  const [selectedPipelineName, setSelectedPipelineName] = useState<
+    string | null
+  >(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
@@ -322,14 +325,14 @@ const PipelineList = () => {
           className="actions-cell-item"
           icon={<PolylineRoundedIcon />}
           label="Put Definition"
-          onClick={handleOpenPutDefinition(params.id)}
+          onClick={handleOpenPutDefinition(params.id, params.row.name)}
           showInMenu
         />,
         <GridActionsCellItem
           className="actions-cell-item"
           icon={<AccountTreeRounded />}
           label="Actual Definition"
-          onClick={handleOpenActualDefinition(params.id)}
+          onClick={handleOpenActualDefinition(params.id, params.row.name)}
           showInMenu
         />,
         <GridActionsCellItem
@@ -387,16 +390,18 @@ const PipelineList = () => {
     []
   );
   const handleOpenPutDefinition = useCallback(
-    (id: GridRowId) => () => {
+    (id: GridRowId, name: string) => () => {
       // console.log("put -----", id);
       setSelectedPipelineId(String(id));
+      setSelectedPipelineName(name);
       setOpenPutDefinitionDialog(true);
     },
     []
   );
   const handleOpenActualDefinition = useCallback(
-    (id: GridRowId) => () => {
+    (id: GridRowId, name: string) => () => {
       setSelectedPipelineId(String(id));
+      setSelectedPipelineName(name);
       setOpenDefinitionDialog(true);
     },
     []
@@ -488,6 +493,7 @@ const PipelineList = () => {
         {openDefinitionDialog && selectedPipelineId && (
           <PipelineActualDefinition
             pipelineId={selectedPipelineId}
+            pipelineName={selectedPipelineName}
             onClose={() => setOpenDefinitionDialog(false)}
           />
         )}
@@ -495,6 +501,7 @@ const PipelineList = () => {
         {openPutDefinitionDialog && selectedPipelineId && (
           <PipelinePutDefinition
             pipelineId={selectedPipelineId}
+            pipelineName={selectedPipelineName}
             onClose={() => setOpenPutDefinitionDialog(false)}
           />
         )}

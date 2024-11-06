@@ -7,7 +7,6 @@ import {
   Tooltip,
   CircularProgress,
   DialogTitle,
-  DialogActions,
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import GetAppRounded from "@mui/icons-material/GetAppRounded";
@@ -20,13 +19,14 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 // Define the props to accept data via the dialog
 interface PipelineActualDefinitionProps {
   pipelineId: string;
+  pipelineName: string | null;
   onClose: () => void;
 }
 
 // Main component
 export const PipelineActualDefinition: React.FC<
   PipelineActualDefinitionProps
-> = ({ pipelineId, onClose }) => {
+> = ({ pipelineId, pipelineName, onClose }) => {
   const [pipelineActualDefinition, setPipelineActualDefinition] =
     useState<PipelineActualDefinitionType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,7 +40,9 @@ export const PipelineActualDefinition: React.FC<
         const data = await pipelineService.getPipelineActualDefinition(
           pipelineId
         );
-        setPipelineActualDefinition(data);
+        // Return the data without metadata
+        const { $metadata, ...pipelineActualDefinition } = data;
+        setPipelineActualDefinition(pipelineActualDefinition);
         setLoading(false);
         showSnackbar(
           "Pipeline actual definition fetched successfully!",
@@ -88,27 +90,20 @@ export const PipelineActualDefinition: React.FC<
     <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
       <Box className="view-header">
         <DialogTitle variant="h3" sx={{ fontWeight: "bold" }}>
-          Actual Definition
+          Actual Definition - {pipelineName}
         </DialogTitle>
-        <DialogActions>
-          <Box
-            className="icons"
-            display="flex"
-            justifyContent="space-around"
-            gap={1}
-          >
-            <Tooltip title="Download">
-              <IconButton onClick={downloadJsonFile}>
-                <GetAppRounded sx={{ color: "var(--white)" }} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Close">
-              <IconButton onClick={onClose}>
-                <CloseRoundedIcon sx={{ color: "var(--white)" }} />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </DialogActions>
+        <Box display="flex" justifyContent="space-around" gap={1}>
+          <Tooltip title="Download">
+            <IconButton onClick={downloadJsonFile}>
+              <GetAppRounded sx={{ color: "var(--white)" }} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Close">
+            <IconButton onClick={onClose}>
+              <CloseRoundedIcon sx={{ color: "var(--white)" }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       <DialogContent dividers className="view-dialog">

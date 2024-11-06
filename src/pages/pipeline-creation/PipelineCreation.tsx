@@ -11,6 +11,7 @@ import {
   FormControl,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
@@ -145,13 +146,11 @@ export const PipelineCreation: React.FC<PipelineCreationProps> = ({
         <DialogTitle variant="h3" sx={{ fontWeight: "bold" }}>
           Create Pipeline
         </DialogTitle>
-        <DialogActions>
-          <Tooltip title="Close">
-            <IconButton onClick={onClose}>
-              <CloseRoundedIcon sx={{ color: "var(--white)" }} />
-            </IconButton>
-          </Tooltip>
-        </DialogActions>
+        <Tooltip title="Close">
+          <IconButton onClick={onClose}>
+            <CloseRoundedIcon sx={{ color: "var(--white)" }} />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       <DialogContent dividers sx={{ padding: 0 }}>
@@ -185,83 +184,89 @@ export const PipelineCreation: React.FC<PipelineCreationProps> = ({
                   size="small"
                 />
               </FormControl>
+              <Box className="container">
+                <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                  Pipeline Tags :
+                </Typography>
+                {/* Dynamically render tag rows */}
+                {formData.tags.map((tag, index) => (
+                  <Stack direction="row" className="tags" key={index}>
+                    {/* Tag Key Field */}
+                    <FormControl fullWidth margin="normal">
+                      <TextField
+                        id={`key-${index}`}
+                        name="key"
+                        label={`Tag ${index + 1}`}
+                        variant="outlined"
+                        value={tag.key}
+                        onChange={(e) =>
+                          handleTagChange(
+                            index,
+                            e as React.ChangeEvent<HTMLInputElement>
+                          )
+                        }
+                        error={tag.error} // Show error state
+                        helperText={
+                          tag.error ? "Key is required if Value is filled!" : ""
+                        }
+                        fullWidth
+                        size="small"
+                      />
+                    </FormControl>
 
-              {/* Dynamically render tag rows */}
-              {formData.tags.map((tag, index) => (
-                <Stack direction="row" spacing={2} className="tags" key={index}>
-                  {/* Tag Key Field */}
-                  <FormControl fullWidth margin="normal">
-                    <TextField
-                      id={`key-${index}`}
-                      name="key"
-                      label={`Tag ${index + 1}`}
-                      variant="outlined"
-                      value={tag.key}
-                      onChange={(e) =>
-                        handleTagChange(
-                          index,
-                          e as React.ChangeEvent<HTMLInputElement>
-                        )
-                      }
-                      error={tag.error} // Show error state
-                      helperText={
-                        tag.error ? "Key is required if Value is filled!" : ""
-                      }
-                      fullWidth
-                      size="small"
-                    />
-                  </FormControl>
+                    {/* Tag Value Field */}
+                    <FormControl fullWidth margin="normal">
+                      <TextField
+                        id={`value-${index}`}
+                        name="value"
+                        label={`Value ${index + 1}`}
+                        variant="outlined"
+                        value={tag.value}
+                        onChange={(e) =>
+                          handleTagChange(
+                            index,
+                            e as React.ChangeEvent<HTMLInputElement>
+                          )
+                        }
+                        error={tag.error} // Show error state
+                        helperText={
+                          tag.error ? "Value is required if Key is filled!" : ""
+                        }
+                        fullWidth
+                        size="small"
+                      />
+                    </FormControl>
 
-                  {/* Tag Value Field */}
-                  <FormControl fullWidth margin="normal">
-                    <TextField
-                      id={`value-${index}`}
-                      name="value"
-                      label={`Value ${index + 1}`}
-                      variant="outlined"
-                      value={tag.value}
-                      onChange={(e) =>
-                        handleTagChange(
-                          index,
-                          e as React.ChangeEvent<HTMLInputElement>
-                        )
-                      }
-                      error={tag.error} // Show error state
-                      helperText={
-                        tag.error ? "Value is required if Key is filled!" : ""
-                      }
-                      fullWidth
-                      size="small"
-                    />
-                  </FormControl>
-
-                  {/* IconButton to remove the current tag row */}
-                  <Box className="remove" alignContent="center">
-                    <Tooltip title="Remove">
-                      <IconButton onClick={() => removeTag(index)}>
-                        <RemoveCircleOutlineIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </Stack>
-              ))}
+                    {/* IconButton to remove the current tag row */}
+                    <Box className="remove" alignContent="center">
+                      <Tooltip title="Remove">
+                        <IconButton onClick={() => removeTag(index)}>
+                          <RemoveCircleOutlineIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Stack>
+                ))}
+              </Box>
             </Stack>
+            <DialogActions>
+              <Stack direction="row" spacing={2} justifyContent="space-evenly">
+                {/* Button to toggle additional fields */}
+                <Button variant="outlined" onClick={addTag} size="small">
+                  Add Tags
+                </Button>
 
-            <Stack direction="row" spacing={2} justifyContent="space-evenly">
-              {/* Button to toggle additional fields */}
-              <Button variant="outlined" onClick={addTag}>
-                Add Tags
-              </Button>
-
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disabled={loading || formHasError}
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </Button>
-            </Stack>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={loading || formHasError}
+                  size="small"
+                >
+                  {loading ? "Submitting..." : "Submit"}
+                </Button>
+              </Stack>
+            </DialogActions>
           </form>
         </Box>
       </DialogContent>

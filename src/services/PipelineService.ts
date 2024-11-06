@@ -85,7 +85,6 @@ export class PipelineService {
     const url = `${this.serviceUrl}/${pipelineId}/definition`;
     try {
       const response = await axios.get<PipelineActualDefinition>(url);
-      // console.log("========-=-=-==-=-", response);
       return response.data;
     } catch (error) {
       console.error(
@@ -166,6 +165,7 @@ export class PipelineService {
       throw error;
     }
   }
+
   async putPipelineDefinition(pipelineId: string, definition: any): Promise<void> {
     const url = `${this.serviceUrl}/${pipelineId}/definition`;
     try {

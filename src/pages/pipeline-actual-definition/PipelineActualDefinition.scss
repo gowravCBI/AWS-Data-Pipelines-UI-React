@@ -8,12 +8,33 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .MuiTypography-root {
+        font-size: 1.5rem; // Default size for larger screens
+
+        @media (max-width: 600px) {
+            font-size: 1.2rem; // Adjust font size on smaller screens
+            padding: 0.5rem;
+        }
+    }
+
+    // Make it responsive
+    @media (max-width: 600px) {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        text-align: center;
+    }
 }
 
 .view-content {
-    // padding: 20px;
     font-size: 12px;
     font-weight: 500;
+
+    // Make it responsive
+    @media (max-width: 600px) {
+        font-size: 10px;
+    }
 }
 
 .view-dialog {
@@ -21,4 +42,11 @@
     color: var(--white-smoke);
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
+
+    // Ensure content is responsive
+    @media (max-width: 600px) {
+        width: 100% !important;
+        height: auto !important;
+        padding: 10px;
+    }
 }
