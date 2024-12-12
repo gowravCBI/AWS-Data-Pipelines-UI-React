@@ -17,8 +17,3 @@ const Topbar = () => {
 };
 
 export default Topbar;
-
-// AppBar: Replaces mat-toolbar and provides a Material-UI styled top bar.
-// Toolbar: A wrapper for aligning items within the AppBar.
-// Typography: Used to display the title with consistent Material-UI styling.
-// styled: Used for styling the AppBar to replicate the .topbar-layout styles from your Angular project.

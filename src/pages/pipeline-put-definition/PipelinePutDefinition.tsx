@@ -84,17 +84,32 @@ export const PipelinePutDefinition: React.FC<PipelinePutDefinitionProps> = ({
                   <strong>1. 'objects' key must contain:</strong>
                   <br />
                   - A non-empty array.
-                  <br />- Each item in the array must have both
+                  <br />
+                  - Each item in the array must have both
                   <strong>'id'</strong> and <strong>'name'</strong> keys.
+                  <br />
+                  - If an item contains a <strong>'ref'</strong>, it must reference the <strong>'id'</strong> of another object (not itself).
                   <br />
                   <strong>2. 'parameters' key (optional):</strong>
                   <br />
                   - If present, it must be an array.
-                  <br />- Each item in the array must have an
+                  <br />
+                  - Each item in the array must have an
                   <strong>'id'</strong> key.
                   <br />
+                  - If an item contains a <strong>'ref'</strong>, it must reference the <strong>'id'</strong> of another parameter (not itself).
+                  <br />
                   <strong>3. 'values' key (optional):</strong>
-                  <br />- If present, it must be an object (not an array).
+                  <br />
+                  - If present, it must be an object (not an array).
+                  <br />
+                  - Each key in the object must match an <strong>'id'</strong> from the <strong>'parameters'</strong>.
+                  <br />
+                  <strong>4. General constraints:</strong>
+                  <br />
+                  - JSON keys and values must not be empty strings.
+                  <br />
+                  - The JSON must only contain the keys <strong>'objects'</strong>, <strong>'parameters'</strong>, and <strong>'values'</strong>.
                 </Typography>
               </React.Fragment>
             }

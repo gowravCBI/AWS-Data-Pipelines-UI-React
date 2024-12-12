@@ -121,19 +121,34 @@ const JsonEditor: React.FC<JsonEditorProps> = ({ onSubmit, pipelineId }) => {
         return false;
       }
 
-      // Check each object in 'objects' for required keys
-      const objectsValid = data.objects.every(
-        (obj: Record<string, any>) =>
-          obj.hasOwnProperty("id") && obj.hasOwnProperty("name")
-      );
+      // Validate each object in 'objects' for required keys and 'ref' key if present
+      const objectsValid = data.objects.every((obj: any) => {
+        if (!obj.id || !obj.name) {
+          showSnackbar(
+            "Each item in 'objects' must have 'id' and 'name' keys!",
+            "error"
+          );
+          return false;
+        }
 
-      if (!objectsValid) {
-        showSnackbar(
-          "Each item in 'objects' must have 'id' and 'name' keys!",
-          "error"
-        );
-        return false;
-      }
+        // Collect all object ids for reference validation
+        const objectIds = data.objects.map((obj: any) => obj.id);
+
+        // Check if 'ref' exists, and if so, ensure it references a different, valid id
+        const refValid = !obj.ref || (obj.ref !== obj.id && objectIds.includes(obj.ref));
+
+        if (!refValid) {
+          showSnackbar(
+            "If 'ref' is present in an object, it must reference the 'id' of another object!",
+            "error"
+          );
+          return false;
+        }
+
+        return true;
+      });
+
+      if (!objectsValid) return false;
 
       // Check if 'parameters' exists and validate each item (if present)
       if (data.parameters) {
@@ -142,26 +157,54 @@ const JsonEditor: React.FC<JsonEditorProps> = ({ onSubmit, pipelineId }) => {
           return false;
         }
 
-        const parametersValid = data.parameters.every(
-          (param: Record<string, any>) => param.hasOwnProperty("id")
-        );
+        const parametersValid = data.parameters.every((param: any) => {
+          if (!param.id) {
+            showSnackbar("Each parameter must have an 'id' key!", "error");
+            return false;
+          }
+          // Collect all object ids for reference validation
+          const parameterIds = data.parameters.map((param: any) => param.id);
 
-        if (!parametersValid) {
+          // Check if 'ref' exists, and if so, ensure it references a different, valid id
+          const refValid = !param.ref || (param.ref !== param.id && parameterIds.includes(param.ref));
+
+          if (!refValid) {
+            showSnackbar(
+              "If 'ref' is present in a parameter, it must reference the 'id' of another object!",
+              "error"
+            );
+            return false;
+          }
+
+          return true;
+        });
+        if (!parametersValid) return false;
+      }
+
+      // Check if 'values' exists
+      if (data.values) {
+        if (!Array.isArray(data.values)) {
+          showSnackbar("'values' must be an Array!", "error");
+          return false;
+        }
+
+        // Each key in the objects of 'values' must match an 'id' from 'parameters'
+        const parameterIds = data.parameters.map((param: any) => param.id);
+        const valuesValid = data.values.every((valueObj: any) => {
+          // Check if each key in the value object exists in parameterIds
+          const keysValid = Object.keys(valueObj).every((key) => {
+            return parameterIds.includes(key);  // Ensure this result is captured
+          });
+          return keysValid;  // Return the result of the every check
+        });
+
+        if (!valuesValid) {
           showSnackbar(
-            "Each item in 'parameters' must have an 'id' key!",
+            "Each key in 'values' must be an 'id' from 'parameters'!",
             "error"
           );
           return false;
         }
-      }
-
-      // Check if 'values' is an object if present (allowing empty objects)
-      if (
-        data.values &&
-        (typeof data.values !== "object" || Array.isArray(data.values))
-      ) {
-        showSnackbar("'values' must be an object if present!", "error");
-        return false;
       }
 
       // Check for empty string values
