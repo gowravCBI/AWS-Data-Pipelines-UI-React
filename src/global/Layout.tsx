@@ -1,14 +1,11 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import "./Layout.scss";
+import { Outlet } from "react-router-dom";
 
-interface LayoutProps {
-  children: ReactNode;
-}
-
-const Layout = ({ children }: LayoutProps) => {
+const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -28,7 +25,7 @@ const Layout = ({ children }: LayoutProps) => {
 
         {/* Main content */}
         <Box className={`main-content ${isSidebarOpen ? "expanded" : ""}`}>
-          {children}
+          <Outlet />
         </Box>
       </Box>
     </Box>

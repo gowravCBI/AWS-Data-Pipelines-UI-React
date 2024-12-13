@@ -82,3 +82,9 @@ export interface CreatePipelineDto {
   description?: string;
   tags: TagDto[];
 }
+
+export type AWSCredentials = {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken: string;
+};
